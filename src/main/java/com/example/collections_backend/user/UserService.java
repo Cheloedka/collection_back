@@ -1,7 +1,7 @@
 package com.example.collections_backend.user;
 
 import com.example.collections_backend.collections.CollectionRepository;
-import com.example.collections_backend.collections.CollectionService;
+import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
 import com.example.collections_backend.dto.userDto.UserNavInfoDto;
 import com.example.collections_backend.dto.userDto.UserPageDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;
     private final FriendshipRepository friendshipRepository;
+    private final FileService fileService;
 
     public void confirmAccount(Long id) {
         var user = userRepository.findUserByIdUser(id)
@@ -58,6 +61,24 @@ public class UserService {
                 .username(user.getNickname())
                 .image(user.getImage())
                 .build();
+    }
+
+    public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
+        var user = getUserByUsername(username);
+        if (request.getName() != null) {
+            user.setName(request.getName());
+        }
+        else if(request.getSurname() != null) {
+            user.setSurname(request.getSurname());
+        }
+        else if(request.getImage() != null) {
+            fileService.deleteImageFromStorage(user.getImage());
+            user.setImage(fileService.uploadFile(request.getImage()));
+        }
+
+        userRepository.save(user);
+
+        return "Changed";
     }
 
 }

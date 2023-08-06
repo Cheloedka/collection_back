@@ -1,28 +1,37 @@
 package com.example.collections_backend.files;
 
+import com.example.collections_backend.exception_handling.exceptions.FileDeleteFailedException;
+import com.example.collections_backend.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
 
 @Service
+@RequiredArgsConstructor
 public class FileService {
     @Value("${upload.path}")
     private String path;
 
+    private final UserRepository userRepository;
 
-    public byte[] getImageByName(String imageName) throws IOException {
 
-        Path destination = Paths.get(path + imageName);
+    public byte[] getImageByName(String filename) throws IOException {
+
+        Path destination = Paths.get(path + filename);
 
         return IOUtils.toByteArray(destination.toUri());
     }
+
 
     public String uploadFile(MultipartFile file) throws IOException {
 
@@ -33,13 +42,25 @@ public class FileService {
         return filename;
     }
 
-    private static String getFileExtension(String fileName) {
-        int lastDot = fileName.lastIndexOf('.');
+    private static String getFileExtension(String filename) {
+        int lastDot = filename.lastIndexOf('.');
 
         if ( lastDot == -1 )  // files without extension
             return "";
         else
-            return fileName.substring( lastDot );
+            return filename.substring( lastDot );
+    }
+
+    public void deleteImageFromStorage(String filename) throws FileNotFoundException {
+        File file = new File(path + filename);
+        if(file.exists()) {
+            if(!file.delete()) {
+                throw new FileDeleteFailedException();
+            }
+        }
+        else {
+            throw new FileNotFoundException();
+        }
     }
 
     private static String generateFilenameFunction() {

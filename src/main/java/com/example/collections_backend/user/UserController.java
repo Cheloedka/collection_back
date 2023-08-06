@@ -1,10 +1,14 @@
 package com.example.collections_backend.user;
 
+import com.example.collections_backend.dto.CollectionAddDto;
+import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
 import com.example.collections_backend.dto.userDto.UserNavInfoDto;
 import com.example.collections_backend.dto.userDto.UserPageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 
 
 @RestController
@@ -24,5 +28,14 @@ public class UserController {
     public UserPageDto getUserPageInfo(@PathVariable(value = "username") String username){
 
         return userService.getUserPageInfo(username);
+    }
+
+    @PutMapping(path ="/auth/user/{username}/edit1", consumes = "multipart/form-data")
+    public ResponseEntity<String> editAccountSettings(
+            @PathVariable(value = "username") String username,
+            @ModelAttribute AccountSettingsEditDto request
+            ) throws IOException {
+
+        return ResponseEntity.ok(userService.editAccountSettings(username, request));
     }
 }

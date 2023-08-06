@@ -1,19 +1,17 @@
 package com.example.collections_backend.exception_handling;
 
-import com.example.collections_backend.exception_handling.exceptions.ConformationTokenExpiredException;
-import com.example.collections_backend.exception_handling.exceptions.EmailSendFailedException;
-import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
-import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
+import com.example.collections_backend.exception_handling.exceptions.*;
 import com.example.collections_backend.response.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class ExceptionHandlingUser {
+public class MExceptionHandling {
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
@@ -24,26 +22,6 @@ public class ExceptionHandlingUser {
         );
 
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); //401
-    }
-
-    @ExceptionHandler(BadCredentialsException.class) //BadCredentialsException handler
-    public ResponseEntity<ErrorResponse> handlePasswordNotFoundException() {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                "Password is wrong"
-        );
-
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); //401
-    }
-
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ErrorResponse> handleUserIsDisabledException() {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.UNAUTHORIZED.value(),
-                "User is disabled"
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); //401 //todo what type of error is DisabledException
-
     }
 
     @ExceptionHandler(ConformationTokenExpiredException.class)
@@ -76,6 +54,15 @@ public class ExceptionHandlingUser {
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND); //404
 
+    }
+
+    @ExceptionHandler(FileDeleteFailedException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequest() {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                "Deleting file failed"
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); //400
     }
 
 }
