@@ -1,9 +1,9 @@
 package com.example.collections_backend.user;
 
-import com.example.collections_backend.dto.CollectionAddDto;
 import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
 import com.example.collections_backend.dto.userDto.UserNavInfoDto;
 import com.example.collections_backend.dto.userDto.UserPageDto;
+import com.example.collections_backend.dto.userDto.UserSettingsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +28,12 @@ public class UserController {
     public UserPageDto getUserPageInfo(@PathVariable(value = "username") String username){
 
         return userService.getUserPageInfo(username);
+    }
+
+    @GetMapping("/auth/user/{username}/settings")
+    public UserSettingsDto getUserSettingsInfo(@PathVariable(value = "username") String username){
+
+        return userService.getUserSettingsInfo(username);
     }
 
     @PutMapping(path ="/auth/user/{username}/edit1", consumes = "multipart/form-data")

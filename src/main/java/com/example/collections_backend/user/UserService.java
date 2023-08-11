@@ -4,6 +4,7 @@ import com.example.collections_backend.collections.CollectionRepository;
 import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
 import com.example.collections_backend.dto.userDto.UserNavInfoDto;
 import com.example.collections_backend.dto.userDto.UserPageDto;
+import com.example.collections_backend.dto.userDto.UserSettingsDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.files.FileService;
@@ -52,6 +53,15 @@ public class UserService {
                 .collections(collectionRepository.findTop3ByUserAndIsPrivate(user, false))
                 .countFriendships(friendshipRepository.countAllByFollower(user).orElseThrow(EntityNotFoundException::new)) //todo exception
                 .friendships(friendshipRepository.findTop4ByFollower(user))
+                .build();
+    }
+
+    public UserSettingsDto getUserSettingsInfo(String username){
+        var user = getUserByUsername(username);
+        return UserSettingsDto.builder()
+                .name(user.getName())
+                .surname(user.getSurname())
+                .email(user.getEmail())
                 .build();
     }
 
