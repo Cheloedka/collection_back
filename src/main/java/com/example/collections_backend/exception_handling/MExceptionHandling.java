@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
 public class MExceptionHandling {
+    //todo user is already exist in login
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
@@ -63,6 +64,24 @@ public class MExceptionHandling {
                 "Deleting file failed"
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); //400
+    }
+
+    @ExceptionHandler(SomethingAlreadyExist.class)
+    public ResponseEntity<ErrorResponse> handleExistException(SomethingAlreadyExist ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND); //404
+    }
+
+    @ExceptionHandler(PasswordDoesntMatchException.class)
+    public ResponseEntity<ErrorResponse> handlePasswordException() {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Invalid Old Password"
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); //401
     }
 
 }

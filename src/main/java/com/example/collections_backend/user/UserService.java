@@ -1,19 +1,19 @@
 package com.example.collections_backend.user;
 
 import com.example.collections_backend.collections.CollectionRepository;
-import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
-import com.example.collections_backend.dto.userDto.UserNavInfoDto;
-import com.example.collections_backend.dto.userDto.UserPageDto;
-import com.example.collections_backend.dto.userDto.UserSettingsDto;
+import com.example.collections_backend.dto.userDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
+import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.friendship.FriendshipRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.net.PasswordAuthentication;
 
 
 @Service
@@ -51,7 +51,9 @@ public class UserService {
                 .backgroundImage(user.getBackgroundImage())
                 .countCollections(collectionRepository.countAllByUser(user))
                 .collections(collectionRepository.findTop3ByUserAndIsPrivate(user, false))
-                .countFriendships(friendshipRepository.countAllByFollower(user).orElseThrow(EntityNotFoundException::new)) //todo exception
+                .countFriendships(friendshipRepository
+                        .countAllByFollower(user)
+                        .orElseThrow(EntityNotFoundException::new))
                 .friendships(friendshipRepository.findTop4ByFollower(user))
                 .build();
     }
@@ -75,16 +77,19 @@ public class UserService {
 
     public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
         var user = getUserByUsername(username);
-        if (request.getName() != null) {
+        if (request.getName() != null)
             user.setName(request.getName());
-        }
-        else if(request.getSurname() != null) {
+        if (request.getSurname() != null)
             user.setSurname(request.getSurname());
-        }
-        else if(request.getImage() != null) {
+        if (request.getImage() != null) {
             fileService.deleteImageFromStorage(user.getImage());
             user.setImage(fileService.uploadFile(request.getImage()));
         }
+        if (request.getNickname() != null)
+            if (userRepository.existsUserByUsername(request.getNickname()))
+                throw new SomethingAlreadyExist("Username Already Exist");
+            else
+                user.setUsername(request.getNickname());
 
         userRepository.save(user);
 

@@ -4,10 +4,12 @@ import com.example.collections_backend.config.JwtService;
 import com.example.collections_backend.dto.userDto.AuthenticationDto;
 import com.example.collections_backend.dto.userDto.ConfirmationDto;
 import com.example.collections_backend.dto.userDto.RegisterDto;
+import com.example.collections_backend.dto.userDto.SecurityChangeDto;
 import com.example.collections_backend.email.EmailSenderService;
 import com.example.collections_backend.email.token.ConfirmationTokenRepository;
 import com.example.collections_backend.email.token.ConfirmationTokenService;
 import com.example.collections_backend.exception_handling.exceptions.ConformationTokenExpiredException;
+import com.example.collections_backend.exception_handling.exceptions.PasswordDoesntMatchException;
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.response.AuthenticationResponse;
 import com.example.collections_backend.user.Role;
@@ -93,6 +95,18 @@ public class AuthenticationService {
         if (userRepository.existsUserByEmail(email)) {
             throw new UserNotFoundException("User already exist");
         }
+    }
+
+    public String changePassword(SecurityChangeDto dto) {
+        var user = userService.getCurrentUser();
+        if ( !passwordEncoder.matches(dto.getOldPassword(), user.getPassword()) ) {
+            throw new PasswordDoesntMatchException();
+        }
+
+        user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        userRepository.save(user);
+
+        return "Success";
     }
 
 }

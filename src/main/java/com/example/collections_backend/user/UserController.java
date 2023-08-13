@@ -1,9 +1,7 @@
 package com.example.collections_backend.user;
 
-import com.example.collections_backend.dto.userDto.AccountSettingsEditDto;
-import com.example.collections_backend.dto.userDto.UserNavInfoDto;
-import com.example.collections_backend.dto.userDto.UserPageDto;
-import com.example.collections_backend.dto.userDto.UserSettingsDto;
+import com.example.collections_backend.auth.AuthenticationService;
+import com.example.collections_backend.dto.userDto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +15,7 @@ import java.io.IOException;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @GetMapping("/auth/navbar")
     public UserNavInfoDto getUserInfoNavbar(){
@@ -38,10 +37,28 @@ public class UserController {
 
     @PutMapping(path ="/auth/user/{username}/edit1", consumes = "multipart/form-data")
     public ResponseEntity<String> editAccountSettings(
-            @PathVariable(value = "username") String username,
+            @PathVariable String username,
             @ModelAttribute AccountSettingsEditDto request
             ) throws IOException {
 
         return ResponseEntity.ok(userService.editAccountSettings(username, request));
     }
+
+    /*@PutMapping("/auth/user/{username}/editEmail")
+    public ResponseEntity<String> editEmail(
+            @PathVariable(value = "username") String username,
+            @RequestBody SecurityChangeDto request
+    ) {
+
+        return ResponseEntity.ok(userService.changeEmail(username, request));
+    }*/
+
+    @PutMapping("/auth/user/editPassword")
+    public ResponseEntity<String> editPassword(
+            @RequestBody SecurityChangeDto request
+    ) {
+
+        return ResponseEntity.ok(authenticationService.changePassword(request));
+    }
+
 }
