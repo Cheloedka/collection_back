@@ -14,7 +14,7 @@ import javax.mail.internet.MimeMessage;
 @RequiredArgsConstructor
 public class EmailSenderService {
      @Value("${spring.mail.username}")
-     private String EmailToSend;
+     private String serverEmail;
 
      @Value("${domain.address}")
      private String domain;
@@ -29,7 +29,7 @@ public class EmailSenderService {
 
              helper.setText(body, true);
              helper.setTo(email);
-             helper.setFrom(EmailToSend);
+             helper.setFrom(serverEmail);
              helper.setSubject(title);
 
              mailSender.send(message);
@@ -40,8 +40,18 @@ public class EmailSenderService {
 
      }
 
-     public void sendMail(String email, String name, String token){
-         String body = EmailBody.confirmationMailBody(domain + "/confirmation/" + token, name);
-         sendEmail(email, "Confirm your email" , body);
-     }
+    public void sendVerificationMail(String email, String name, String token)  {
+        String body = EmailBody.verificationTemplate(name, domain + "/confirmation/" + token);
+        sendEmail(email, "Verify your registration", body);
+    }
+
+    public void sendChangeEmailMail(String oldEmail, String newEmail, String name, String token) {
+        String body = EmailBody.changeEmailTemplate(name, domain + "/resetMail/" + token, newEmail);
+        sendEmail(oldEmail, "Change e-mail on new one", body);
+    }
+
+    public void sendNewEmailConfirmationMail(String email, String name, String token) {
+        String body = EmailBody.changeEmailConfirmationNewTemplate(name, domain + "/newMail/" + token );
+        sendEmail(email, "Confirm e-mail changing", body);
+    }
 }

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@ToString
 public class ConfirmationToken {
 
     @Id
@@ -21,11 +22,11 @@ public class ConfirmationToken {
     private String confirmationToken;
     private LocalDateTime expiredTime;
     private LocalDateTime confirmedTime;
+    private String message;
 
-    @ManyToOne
-    @JoinColumn (
-            nullable = false,
-            name = "id_user"
-    )
-    private User user;
+    private Long userId;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private ConfirmationType confirmationType;
 }

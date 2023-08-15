@@ -2,7 +2,7 @@ package com.example.collections_backend.email;
 
 public class EmailBody {
 
-    public static String confirmationMailBody(String link, String name){
+    public static String mailBody(String text, String name, String link, String button){
         return "<html>\n" +
                 "<head>\n" +
                 "<style type=\"text/css\">\n" +
@@ -36,12 +36,12 @@ public class EmailBody {
                 "Hi "+ name +" \n" +
                 "</h1>\n" +
                 "<p style=\"text-align: center;font-size: 18px;line-height: 28px;margin-bottom: 15px;margin-top: 0\">\n" +
-                "To confirm your email just click this button!\n" +
+                text +"\n" +
                 "</p>\n" +
                 "</div>\n" +
                 "<div style=\"text-align: center;margin-top: 40px;margin-bottom: 40px\">\n" +
                 "<a style=\"color: #ffffff\" class=\"abutton\" href=\""+ link +"\" target=\"_blank\">\n" +
-                "Confirm\n" +
+                button + "\n" +
                 "</a>\n" +
                 "</div>\n" +
                 "</div>\n" +
@@ -49,6 +49,33 @@ public class EmailBody {
                 "</div>\n" +
                 "</body>\n" +
                 "</html>";
+    }
+
+    public static String verificationTemplate(String name, String link) {
+        return mailBody(
+                "If you have just registered on Collections, please confirm your email.",
+                name,
+                link,
+                "Verify your account"
+        );
+    }
+
+    public static String changeEmailTemplate(String name, String link, String email) {
+        return mailBody(
+                "If you requested to change your email to " + email + ", click a button below. Otherwise, don't do anything",
+                name,
+                link,
+                "Confirm action"
+        );
+    }
+
+    public static String changeEmailConfirmationNewTemplate(String name, String link) {
+        return mailBody(
+                "If you wanted to change e-mail on Collections, click a button below. Otherwise, don't do anything",
+                name,
+                link,
+                "Confirm action"
+        );
     }
 
 

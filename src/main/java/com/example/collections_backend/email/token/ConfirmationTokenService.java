@@ -1,6 +1,7 @@
 package com.example.collections_backend.email.token;
 
 import com.example.collections_backend.user.User;
+import com.example.collections_backend.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +13,22 @@ import java.util.UUID;
 public class ConfirmationTokenService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
 
-    public void saveConfirmationToken(ConfirmationToken token) {
+    private void saveConfirmationToken(ConfirmationToken token) {
         confirmationTokenRepository.save(token);
     }
 
-    public String createConformationToken(User user){
+    public String createConformationToken(Long id, ConfirmationType type, String message) {
         String token = UUID.randomUUID().toString();
 
         var confirmationToken = ConfirmationToken.builder()
                 .confirmationToken(token)
                 .expiredTime(LocalDateTime.now().plusMinutes(15))
-                .user(user)
+                .userId(id)
+                .confirmationType(type)
+                .message(message)
                 .build();
+        System.out.println(confirmationToken);
+
         saveConfirmationToken(confirmationToken);
         return token;
     }
