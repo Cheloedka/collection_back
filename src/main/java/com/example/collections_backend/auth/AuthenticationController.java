@@ -3,6 +3,7 @@ package com.example.collections_backend.auth;
 import com.example.collections_backend.dto.userDto.AuthenticationDto;
 import com.example.collections_backend.dto.userDto.ConfirmationDto;
 import com.example.collections_backend.dto.userDto.RegisterDto;
+import com.example.collections_backend.dto.userDto.SecuritySettingsEditDto;
 import com.example.collections_backend.response.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +34,12 @@ public class AuthenticationController {
     public ResponseEntity<String> confirm(@RequestBody ConfirmationDto request) {
 
         return ResponseEntity.ok(authenticationService.confirmation(request));
+    }
+
+    @PutMapping("/user/resetPassword")
+    public ResponseEntity<String> resetPassword(@RequestBody SecuritySettingsEditDto request) {
+
+        return ResponseEntity.ok(authenticationService.resetPassword(request.getEmail()));
     }
 
 }

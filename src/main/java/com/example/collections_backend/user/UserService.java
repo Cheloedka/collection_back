@@ -45,6 +45,10 @@ public class UserService {
         return userRepository.findUserByIdUser(id).orElseThrow(EntityNotFoundException::new);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
     public UserPageDto getUserPageInfo(String username){
         var user = getUserByUsername(username);
         return UserPageDto.builder()

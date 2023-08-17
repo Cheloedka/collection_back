@@ -46,7 +46,7 @@ public class UserController {
 
     @PutMapping("/auth/user/changeEmail")
     public ResponseEntity<String> editEmail(
-            @RequestBody SecurityChangeDto request
+            @RequestBody SecuritySettingsEditDto request
     ) {
 
         return ResponseEntity.ok(authenticationService.changeEmail(request.getEmail()));
@@ -54,7 +54,7 @@ public class UserController {
 
     @PutMapping("/auth/user/changePassword")
     public ResponseEntity<String> editPassword(
-            @RequestBody SecurityChangeDto request
+            @RequestBody SecuritySettingsEditDto request
     ) {
 
         return ResponseEntity.ok(authenticationService.changePassword(request));

@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SecurityChangeDto {
+public class SecuritySettingsEditDto {
     private String email;
     private String newPassword;
     private String oldPassword;

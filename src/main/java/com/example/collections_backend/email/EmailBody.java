@@ -78,5 +78,14 @@ public class EmailBody {
         );
     }
 
+    public static String resetPasswordTemplate(String name, String link) {
+        return mailBody(
+                "If you wanted to reset password on Collections, click a button below. Otherwise, don't do anything",
+                name,
+                link,
+                "Confirm action"
+        );
+    }
+
 
 }

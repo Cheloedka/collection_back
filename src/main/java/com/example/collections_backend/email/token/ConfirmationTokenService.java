@@ -1,7 +1,5 @@
 package com.example.collections_backend.email.token;
 
-import com.example.collections_backend.user.User;
-import com.example.collections_backend.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +16,7 @@ public class ConfirmationTokenService {
     }
 
     public String createConformationToken(Long id, ConfirmationType type, String message) {
-        String token = UUID.randomUUID().toString();
+        String token = generateToken();
 
         var confirmationToken = ConfirmationToken.builder()
                 .confirmationToken(token)
@@ -31,6 +29,25 @@ public class ConfirmationTokenService {
 
         saveConfirmationToken(confirmationToken);
         return token;
+    }
+
+    public String createConformationToken(Long id, ConfirmationType type) {
+        String token = generateToken();
+
+        var confirmationToken = ConfirmationToken.builder()
+                .confirmationToken(token)
+                .expiredTime(LocalDateTime.now().plusMinutes(15))
+                .userId(id)
+                .confirmationType(type)
+                .build();
+        System.out.println(confirmationToken);
+
+        saveConfirmationToken(confirmationToken);
+        return token;
+    }
+
+    public String generateToken() {
+        return UUID.randomUUID().toString();
     }
 
 }

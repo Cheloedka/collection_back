@@ -54,4 +54,9 @@ public class EmailSenderService {
         String body = EmailBody.changeEmailConfirmationNewTemplate(name, domain + "/newMail/" + token );
         sendEmail(email, "Confirm e-mail changing", body);
     }
+
+    public void resetPasswordMail(String email, String name, String token) {
+         String body = EmailBody.resetPasswordTemplate(name, domain + "/resetPwd/" + token);
+         sendEmail(email, "Verify password reset", body);
+    }
 }

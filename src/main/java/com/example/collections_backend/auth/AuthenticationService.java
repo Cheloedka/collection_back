@@ -4,7 +4,7 @@ import com.example.collections_backend.config.JwtService;
 import com.example.collections_backend.dto.userDto.AuthenticationDto;
 import com.example.collections_backend.dto.userDto.ConfirmationDto;
 import com.example.collections_backend.dto.userDto.RegisterDto;
-import com.example.collections_backend.dto.userDto.SecurityChangeDto;
+import com.example.collections_backend.dto.userDto.SecuritySettingsEditDto;
 import com.example.collections_backend.email.EmailSenderService;
 import com.example.collections_backend.email.token.ConfirmationToken;
 import com.example.collections_backend.email.token.ConfirmationTokenRepository;
@@ -57,7 +57,7 @@ public class AuthenticationService {
         return new AuthenticationResponse(jwtToken);
     }
 
-    private void throwErrIfExistsByEmail(String email) {
+    private void existsByEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
             throw new UserNotFoundException("User already exist");
         }
@@ -65,7 +65,7 @@ public class AuthenticationService {
 
     public String register(RegisterDto request) {
 
-        throwErrIfExistsByEmail(request.getEmail());
+        existsByEmail(request.getEmail());
 
         var user = User.builder()
                 .username(request.getUsername())
@@ -110,6 +110,10 @@ public class AuthenticationService {
                 changeEmailLastConfirmation(token);
                 message = "Email changed successfully";
             }
+            case PASSWORD_RESET -> {
+                resetPasswordAction(token, request.getInfo());
+                message = "Password changed successfully";
+            }
         }
         return message;
     }
@@ -133,8 +137,8 @@ public class AuthenticationService {
     }
 
     private void changeEmailActionConfirmation(ConfirmationToken token) { //confirms action "change email"
-        var user = userService.getUserById(token.getUserId());
         expiredToken(token);
+        var user = userService.getUserById(token.getUserId());
 
         String newToken = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.CHANGE_EMAIL_LAST, token.getMessage());
 
@@ -148,8 +152,8 @@ public class AuthenticationService {
 
     //?
     private void changeEmailLastConfirmation(ConfirmationToken token) { //new email confirmation
-        var user = userService.getUserById(token.getUserId());
         expiredToken(token);
+        var user = userService.getUserById(token.getUserId());
 
         user.setEmail(token.getMessage());
         userRepository.save(user);
@@ -158,7 +162,7 @@ public class AuthenticationService {
 
     public void sendVerificationMail( User user ) {
 
-        String token = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.REGISTRATION, "verification");
+        String token = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.REGISTRATION);
         emailSenderService.sendVerificationMail(
                 user.getUsername(),
                 user.getName(),
@@ -167,26 +171,45 @@ public class AuthenticationService {
     }
 
     public String changeEmail(String email) { //sends email list on old email to confirm action
-        System.out.println("WORKED 1");
-        throwErrIfExistsByEmail(email);
+
+        existsByEmail(email);
         var user = userService.getCurrentUser();
-        System.out.println("WORKED 2");
         String newToken = confirmationTokenService.createConformationToken(
                 user.getIdUser(), ConfirmationType.CHANGE_EMAIL, email);
-        System.out.println("WORKED 3");
         emailSenderService.sendChangeEmailMail(
                 user.getUsername(),
                 email,
                 user.getName(),
                 newToken
         );
-        System.out.println("WORKED 4");
 
         return "Verification is sent on old email address";
     }
 
+    public String resetPassword(String email) {
+        var user = userService.getUserByEmail(email);
 
-    public String changePassword(SecurityChangeDto dto) {
+        String token = confirmationTokenService.createConformationToken(
+                user.getIdUser(), ConfirmationType.PASSWORD_RESET);
+
+        emailSenderService.resetPasswordMail(
+                email,
+                user.getName(),
+                token
+        );
+        return "Verification is sent on email address";
+    }
+
+    public void resetPasswordAction(ConfirmationToken token, String message) {
+        expiredToken(token);
+        var user = userService.getUserById(token.getUserId());
+
+        user.setPassword(passwordEncoder.encode(message));
+        userRepository.save(user);
+    }
+
+
+    public String changePassword(SecuritySettingsEditDto dto) {
         var user = userService.getCurrentUser();
         if ( !passwordEncoder.matches(dto.getOldPassword(), user.getPassword()) ) {
             throw new PasswordDoesntMatchException();
