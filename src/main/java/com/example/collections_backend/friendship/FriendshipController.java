@@ -17,11 +17,6 @@ public class FriendshipController {
         return ResponseEntity.ok(friendshipService.newFollowing(username));
     }
 
-    @GetMapping("/auth/friendships/isexist/{username}")
-    public boolean IsFollowingExist(@PathVariable(value = "username") String username) {
-        return friendshipService.isFollowingExist(username);
-    }
-
     @DeleteMapping("/auth/friendships/delete/{username}")
     public ResponseEntity<String> DeleteFollowing(@PathVariable(value = "username") String username) {
 

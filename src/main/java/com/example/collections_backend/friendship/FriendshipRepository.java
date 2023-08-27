@@ -1,6 +1,5 @@
 package com.example.collections_backend.friendship;
 
-import com.example.collections_backend.collections.Collection;
 import com.example.collections_backend.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 

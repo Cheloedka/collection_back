@@ -14,10 +14,7 @@ import com.example.collections_backend.exception_handling.exceptions.Conformatio
 import com.example.collections_backend.exception_handling.exceptions.PasswordDoesntMatchException;
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.response.AuthenticationResponse;
-import com.example.collections_backend.user.Role;
-import com.example.collections_backend.user.User;
-import com.example.collections_backend.user.UserRepository;
-import com.example.collections_backend.user.UserService;
+import com.example.collections_backend.user.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,7 +35,7 @@ public class AuthenticationService {
     private final ConfirmationTokenService confirmationTokenService;
     private final EmailSenderService emailSenderService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
-    private final UserService userService;
+    private final UserManagementService userManagementService;
 
     //login
     public AuthenticationResponse authenticate(AuthenticationDto request) {
@@ -59,7 +56,7 @@ public class AuthenticationService {
 
     private void existsByEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
-            throw new UserNotFoundException("User already exist");
+            throw new UserNotFoundException("Email is already exist");
         }
     }
 
@@ -81,7 +78,7 @@ public class AuthenticationService {
 
         sendVerificationMail(user);
 
-        return "Confirm token";
+        return "Verification mail is sent on your email";
     }
 
 
@@ -125,7 +122,7 @@ public class AuthenticationService {
     }
 
     private void activateAccountIfVerified(ConfirmationToken token) {
-        var user = userService.getUserById(token.getUserId());
+        var user = userManagementService.getUserById(token.getUserId());
 
 
         if (token.getConfirmedTime().isAfter(token.getExpiredTime())){
@@ -138,7 +135,7 @@ public class AuthenticationService {
 
     private void changeEmailActionConfirmation(ConfirmationToken token) { //confirms action "change email"
         expiredToken(token);
-        var user = userService.getUserById(token.getUserId());
+        var user = userManagementService.getUserById(token.getUserId());
 
         String newToken = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.CHANGE_EMAIL_LAST, token.getMessage());
 
@@ -153,7 +150,7 @@ public class AuthenticationService {
     //?
     private void changeEmailLastConfirmation(ConfirmationToken token) { //new email confirmation
         expiredToken(token);
-        var user = userService.getUserById(token.getUserId());
+        var user = userManagementService.getUserById(token.getUserId());
 
         user.setEmail(token.getMessage());
         userRepository.save(user);
@@ -173,7 +170,7 @@ public class AuthenticationService {
     public String changeEmail(String email) { //sends email list on old email to confirm action
 
         existsByEmail(email);
-        var user = userService.getCurrentUser();
+        var user = userManagementService.getCurrentUser();
         String newToken = confirmationTokenService.createConformationToken(
                 user.getIdUser(), ConfirmationType.CHANGE_EMAIL, email);
         emailSenderService.sendChangeEmailMail(
@@ -187,7 +184,7 @@ public class AuthenticationService {
     }
 
     public String resetPassword(String email) {
-        var user = userService.getUserByEmail(email);
+        var user = userManagementService.getUserByEmail(email);
 
         String token = confirmationTokenService.createConformationToken(
                 user.getIdUser(), ConfirmationType.PASSWORD_RESET);
@@ -202,7 +199,7 @@ public class AuthenticationService {
 
     public void resetPasswordAction(ConfirmationToken token, String message) {
         expiredToken(token);
-        var user = userService.getUserById(token.getUserId());
+        var user = userManagementService.getUserById(token.getUserId());
 
         user.setPassword(passwordEncoder.encode(message));
         userRepository.save(user);
@@ -210,7 +207,7 @@ public class AuthenticationService {
 
 
     public String changePassword(SecuritySettingsEditDto dto) {
-        var user = userService.getCurrentUser();
+        var user = userManagementService.getCurrentUser();
         if ( !passwordEncoder.matches(dto.getOldPassword(), user.getPassword()) ) {
             throw new PasswordDoesntMatchException();
         }

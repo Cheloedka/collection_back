@@ -6,7 +6,7 @@ public class EmailBody {
         return "<html>\n" +
                 "<head>\n" +
                 "<style type=\"text/css\">\n" +
-                ".abutton{\n" +
+                ".MyButton{\n" +
                 "font-size: 16px;\n" +
                 "font-style: italic;\n" +
                 "display: inline-block;\n" +
@@ -19,7 +19,7 @@ public class EmailBody {
                 "padding: 12px 36px;\n" +
                 "cursor:pointer;\n" +
                 "}\n" +
-                ".abutton:hover{\n" +
+                ".MyButton:hover{\n" +
                 "background-color: #383156;\n" +
                 "}\n" +
                 "</style>\n" +
@@ -40,7 +40,7 @@ public class EmailBody {
                 "</p>\n" +
                 "</div>\n" +
                 "<div style=\"text-align: center;margin-top: 40px;margin-bottom: 40px\">\n" +
-                "<a style=\"color: #ffffff\" class=\"abutton\" href=\""+ link +"\" target=\"_blank\">\n" +
+                "<a style=\"color: #ffffff\" class=\"MyButton\" href=\""+ link +"\" target=\"_blank\">\n" +
                 button + "\n" +
                 "</a>\n" +
                 "</div>\n" +

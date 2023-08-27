@@ -1,4 +1,4 @@
-package com.example.collections_backend.dto;
+package com.example.collections_backend.dto.collectionDto;
 
 
 import lombok.*;
@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @Builder
-public class CollectionAddDto {
+public class NewCollectionDto {
     private String name;
     private String about;
     private String information;

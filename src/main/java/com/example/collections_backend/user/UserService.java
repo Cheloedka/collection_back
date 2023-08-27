@@ -4,16 +4,13 @@ import com.example.collections_backend.collections.CollectionRepository;
 import com.example.collections_backend.dto.userDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
-import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.friendship.FriendshipRepository;
+import com.example.collections_backend.friendship.FriendshipService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.PasswordAuthentication;
 
 
 @Service
@@ -23,36 +20,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final CollectionRepository collectionRepository;
     private final FriendshipRepository friendshipRepository;
+    private final FriendshipService friendshipService;
     private final FileService fileService;
-
-    public void confirmAccount(Long id) {
-        var user = userRepository.findUserByIdUser(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
-        user.setIsEnabled(true);
-        userRepository.save(user);
-
-    }
-
-    public User getCurrentUser() {
-        return userRepository.findUserByEmail( SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(() -> new UserNotFoundException("User is not found"));
-    }
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public User getUserById(Long id) {
-        return userRepository.findUserByIdUser(id).orElseThrow(EntityNotFoundException::new);
-    }
-
-    public User getUserByEmail(String email) {
-        return userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
-    }
+    private final UserManagementService userManagementService;
 
     public UserPageDto getUserPageInfo(String username){
-        var user = getUserByUsername(username);
+        var user = userManagementService.getUserByUsername(username);
         return UserPageDto.builder()
-                .username(user.getNickname())
+                .username(username)
                 .name(user.getName())
                 .surname(user.getSurname())
                 .image(user.getImage())
@@ -63,20 +38,21 @@ public class UserService {
                         .countAllByFollower(user)
                         .orElseThrow(EntityNotFoundException::new))
                 .friendships(friendshipRepository.findTop4ByFollower(user))
+                .isFollower(friendshipService.isFollowingExist(username))
                 .build();
     }
 
     public UserSettingsDto getUserSettingsInfo(String username){
-        var user = getUserByUsername(username);
+        var user = userManagementService.getUserByUsername(username);
         return UserSettingsDto.builder()
+                .email(user.getEmail())
                 .name(user.getName())
                 .surname(user.getSurname())
-                .email(user.getEmail())
                 .build();
     }
 
     public UserNavInfoDto getUserNavInfo() {
-        var user = getCurrentUser();
+        var user = userManagementService.getCurrentUser();
         return UserNavInfoDto.builder()
                 .username(user.getNickname())
                 .image(user.getImage())
@@ -84,7 +60,7 @@ public class UserService {
     }
 
     public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
-        var user = getUserByUsername(username);
+        var user = userManagementService.getUserByUsername(username);
         if (request.getName() != null)
             user.setName(request.getName());
         if (request.getSurname() != null)

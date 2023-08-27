@@ -1,12 +1,10 @@
 package com.example.collections_backend.files;
 
 import com.example.collections_backend.exception_handling.exceptions.FileDeleteFailedException;
-import com.example.collections_backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -21,8 +19,6 @@ import java.util.Random;
 public class FileService {
     @Value("${upload.path}")
     private String path;
-
-    private final UserRepository userRepository;
 
 
     public byte[] getImageByName(String filename) throws IOException {

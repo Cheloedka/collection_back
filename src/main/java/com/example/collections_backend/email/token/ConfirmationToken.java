@@ -1,6 +1,5 @@
 package com.example.collections_backend.email.token;
 
-import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@ToString
 public class ConfirmationToken {
 
     @Id

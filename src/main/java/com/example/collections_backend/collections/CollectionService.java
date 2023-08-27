@@ -1,11 +1,10 @@
 package com.example.collections_backend.collections;
 
-import com.example.collections_backend.dto.CollectionAddDto;
-import com.example.collections_backend.dto.CollectionReturnDto;
+import com.example.collections_backend.dto.collectionDto.NewCollectionDto;
+import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
-import com.example.collections_backend.user.User;
-import com.example.collections_backend.user.UserService;
+import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,31 +14,32 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class CollectionService {
     private final CollectionRepository collectionRepository;
-    private final UserService userService;
+    private final UserManagementService userManagementService;
     private final FileService fileService;
 
-    private Collection getCollectionById(Long id) {
-        return collectionRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-    }
-
     public Iterable<Collection> getCollectionsInfo(String username) {
-        return collectionRepository.findAllByUser(userService.getUserByUsername(username));
+        return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
     }
 
-    public CollectionReturnDto getCollectionInfo(Long id, String username){
-        var collection = collectionRepository.findByUserAndIdCollection(userService.getUserByUsername(username), id).orElseThrow(EntityNotFoundException::new);
-
-        return CollectionReturnDto.builder()
+    public ReturnCollectionDto getCollectionInfo(Long id, String username){
+        var collection = collectionRepository
+                .findByUserAndIdCollection(userManagementService.getUserByUsername(username), id)
+                .orElseThrow(EntityNotFoundException::new);
+        var user = collection.getUser();
+        return ReturnCollectionDto.builder()
                 .name(collection.getName())
                 .about(collection.getAbout())
                 .information(collection.getInformation())
                 .image(collection.getImage())
                 .backgroundImage(collection.getBackgroundImage())
                 .isPrivate(collection.isPrivate())
+                .userFirstName(user.getName())
+                .userSurname(user.getSurname())
+                .userImage(user.getImage())
                 .build();
     }
 
-    public String newCollection(CollectionAddDto request) throws IOException {
+    public String newCollection(NewCollectionDto request) throws IOException {
 
         String image = "";
         String backImage = "";
@@ -56,7 +56,7 @@ public class CollectionService {
                 .name(request.getName())
                 .about(request.getAbout())
                 .information(request.getInformation())
-                .user(userService.getCurrentUser())
+                .user(userManagementService.getCurrentUser())
                 .image(image)
                 .backgroundImage(backImage)
                 .isPrivate(request.isPrivate())
@@ -65,27 +65,5 @@ public class CollectionService {
         collectionRepository.save(collection);
 
         return "Collection create successful";
-    }
-
-    public String removeCollection(Long id) {
-        collectionRepository.delete(getCollectionById(id));
-        return "Collection removed";
-    }
-
-    public String editCollection(Long id, CollectionAddDto request) {
-        var collection = getCollectionById(id);
-
-        if(request.getName() != null) {
-            collection.setName(request.getName());
-        }
-        if(request.getAbout() != null) {
-            collection.setAbout(request.getAbout());
-        }
-        if(request.getInformation() != null) {
-            collection.setInformation(request.getInformation());
-        }
-
-        collectionRepository.save(collection);
-        return "Collection edit successful";
     }
 }

@@ -18,4 +18,5 @@ public class UserPageDto {
     private Iterable<Collection> collections;
     private Long countFriendships;
     private Iterable<Friendship> friendships;
+    private boolean isFollower;
 }

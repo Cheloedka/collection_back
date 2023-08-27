@@ -1,7 +1,7 @@
 package com.example.collections_backend.collections;
 
-import com.example.collections_backend.dto.CollectionAddDto;
-import com.example.collections_backend.dto.CollectionReturnDto;
+import com.example.collections_backend.dto.collectionDto.NewCollectionDto;
+import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +19,8 @@ public class CollectionController {
         return collectionService.getCollectionsInfo(username);
     }
 
-    /*@GetMapping("collections/userpage/{username}")
-    public Iterable<Collection> getThreeCollectionsInfo(@PathVariable(value = "username") String username) {
-        return collectionService.get3CollectionsInfo(username);
-    }*/
-
     @GetMapping("collection/{username}/{idCollection}")
-    public CollectionReturnDto getCollectionInfo(
+    public ReturnCollectionDto getCollectionInfo(
             @PathVariable(value = "idCollection") Long id,
             @PathVariable(value = "username") String username
     ) {
@@ -33,24 +28,9 @@ public class CollectionController {
     }
 
     @PostMapping(path ="auth/collection/new", consumes = "multipart/form-data")
-    public ResponseEntity<String> addCollection(@ModelAttribute CollectionAddDto request) throws IOException {
+    public ResponseEntity<String> addCollection(@ModelAttribute NewCollectionDto request) throws IOException {
         return ResponseEntity.ok(collectionService.newCollection(request));
-    } // realized
+    }
 
-
-    /*@DeleteMapping("auth/collection/{idCollection}/remove")
-    public ResponseEntity<String> removeCollection(@PathVariable(value = "idCollection") Long id) {
-
-        return ResponseEntity.ok(collectionService.removeCollection(id));
-    }*/
-
-    /*@PutMapping("auth/collection/{idCollection}/edit")
-    public ResponseEntity<String> editCollection(
-            @PathVariable(value = "idCollection") Long id,
-            @RequestBody CollectionAddDto request
-    ) {
-        System.out.println(request);
-        return ResponseEntity.ok(collectionService.editCollection(id, request));
-    }*/
 
 }

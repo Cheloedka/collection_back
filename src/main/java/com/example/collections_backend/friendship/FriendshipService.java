@@ -1,7 +1,8 @@
 package com.example.collections_backend.friendship;
 
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
-import com.example.collections_backend.user.UserService;
+import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
+import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,12 +11,15 @@ import org.springframework.stereotype.Service;
 public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
-    private final UserService userService;
+    private final UserManagementService userManagementService;
 
 
     public String newFollowing(String username) {
-        var follower = userService.getCurrentUser();
-        var user = userService.getUserByUsername(username);
+        var follower = userManagementService.getCurrentUser();
+        var user = userManagementService.getUserByUsername(username);
+
+        if (isFollowingExist(username) )
+            throw new SomethingAlreadyExist("You already following to this account");
 
         var friendship = Friendship.builder()
                 .follower(follower)
@@ -30,15 +34,15 @@ public class FriendshipService {
     public boolean isFollowingExist(String username) {
 
         return friendshipRepository.existsFriendshipByFollowerAndUser(
-                userService.getCurrentUser(),
-                userService.getUserByUsername(username)
+                userManagementService.getCurrentUser(),
+                userManagementService.getUserByUsername(username)
         );
     }
 
     public String deleteFollowing(String username) {
         var friendship = friendshipRepository.findFriendshipByFollowerAndUser(
-                userService.getCurrentUser(),
-                userService.getUserByUsername(username)
+                userManagementService.getCurrentUser(),
+                userManagementService.getUserByUsername(username)
         ).orElseThrow(EntityNotFoundException::new);
         friendshipRepository.delete(friendship);
 

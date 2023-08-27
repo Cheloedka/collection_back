@@ -41,5 +41,4 @@ public class AuthenticationController {
 
         return ResponseEntity.ok(authenticationService.resetPassword(request.getEmail()));
     }
-
 }

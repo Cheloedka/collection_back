@@ -1,9 +1,12 @@
 package com.example.collections_backend.collections;
 
+import com.example.collections_backend.collections.collectionItem.CollectionItem;
 import com.example.collections_backend.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Setter
@@ -24,13 +27,16 @@ public class Collection {
     private String backgroundImage;
     private boolean isPrivate;
 
+    @OneToMany(mappedBy = "collection", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<CollectionItem> items;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(
             nullable = false,
             name = "id_user"
     )
-    @JsonIgnore
     private User user;
 
 }
