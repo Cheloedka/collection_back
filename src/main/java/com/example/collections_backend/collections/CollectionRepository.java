@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface CollectionRepository extends JpaRepository<Collection, Long> {
-    Iterable<Collection> findAllByUser(User user);
-    Iterable<Collection> findTop3ByUserAndIsPrivate(User user, boolean isPrivate);
-    Optional<Collection> findByUserAndIdCollection(User user, Long id);
+public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {
+    Iterable<CollectionEntity> findAllByUser(User user);
+    Iterable<CollectionEntity> findTop3ByUserAndIsPrivate(User user, boolean isPrivate);
+    Optional<CollectionEntity> findByUserAndIdCollection(User user, Long id);
     Long countAllByUser(User user);
 }

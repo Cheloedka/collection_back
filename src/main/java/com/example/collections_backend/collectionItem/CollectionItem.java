@@ -1,7 +1,7 @@
-package com.example.collections_backend.collections.collectionItem;
+package com.example.collections_backend.collectionItem;
 
-import com.example.collections_backend.collections.Collection;
-import com.example.collections_backend.collections.collectionItem.itemImages.ImagesItems;
+import com.example.collections_backend.collectionItem.itemImages.ImagesItem;
+import com.example.collections_backend.collections.CollectionEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,9 +27,10 @@ public class CollectionItem {
 
     @OneToMany(mappedBy = "collectionItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
-    private List<ImagesItems> images;
+    private List<ImagesItem> images;
 
     @ManyToOne
     @JsonIgnore
-    private Collection collection;
+    @JoinColumn(name = "id_collection")
+    private CollectionEntity collectionEntity;
 }

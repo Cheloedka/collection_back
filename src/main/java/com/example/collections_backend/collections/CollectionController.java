@@ -15,7 +15,7 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @GetMapping("collections/{username}")
-    public Iterable<Collection> getCollectionsInfo(@PathVariable(value = "username") String username) {
+    public Iterable<CollectionEntity> getCollectionsInfo(@PathVariable(value = "username") String username) {
         return collectionService.getCollectionsInfo(username);
     }
 

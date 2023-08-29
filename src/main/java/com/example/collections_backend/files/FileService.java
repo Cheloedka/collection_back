@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Random;
 
 @Service
@@ -28,6 +29,16 @@ public class FileService {
         return IOUtils.toByteArray(destination.toUri());
     }
 
+    public ArrayList<String> uploadItemImages(ArrayList<MultipartFile> images) throws IOException {
+
+        ArrayList<String> newImages = new ArrayList<>();
+
+        for (MultipartFile image : images) {
+            newImages.add(uploadFile(image));
+        }
+
+        return newImages;
+    }
 
     public String uploadFile(MultipartFile file) throws IOException {
 

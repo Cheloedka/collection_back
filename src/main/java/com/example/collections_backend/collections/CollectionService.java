@@ -1,5 +1,7 @@
 package com.example.collections_backend.collections;
 
+import com.example.collections_backend.collectionItem.CollectionItemRepository;
+import com.example.collections_backend.collectionItem.CollectionItemService;
 import com.example.collections_backend.dto.collectionDto.NewCollectionDto;
 import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
@@ -15,9 +17,11 @@ import java.io.IOException;
 public class CollectionService {
     private final CollectionRepository collectionRepository;
     private final UserManagementService userManagementService;
+    private final CollectionItemService collectionItemService;
+    private final CollectionItemRepository collectionItemRepository;
     private final FileService fileService;
 
-    public Iterable<Collection> getCollectionsInfo(String username) {
+    public Iterable<CollectionEntity> getCollectionsInfo(String username) {
         return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
     }
 
@@ -36,6 +40,8 @@ public class CollectionService {
                 .userFirstName(user.getName())
                 .userSurname(user.getSurname())
                 .userImage(user.getImage())
+                .items(collectionItemService.get5topItems(collection))
+                .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
                 .build();
     }
 
@@ -52,7 +58,7 @@ public class CollectionService {
         }
 
 
-        var collection = Collection.builder()
+        var collection = CollectionEntity.builder()
                 .name(request.getName())
                 .about(request.getAbout())
                 .information(request.getInformation())

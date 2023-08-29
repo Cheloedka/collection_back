@@ -1,6 +1,6 @@
-package com.example.collections_backend.collections.collectionItem.itemImages;
+package com.example.collections_backend.collectionItem.itemImages;
 
-import com.example.collections_backend.collections.collectionItem.CollectionItem;
+import com.example.collections_backend.collectionItem.CollectionItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "_images_collection_item")
-public class ImagesItems {
+public class ImagesItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

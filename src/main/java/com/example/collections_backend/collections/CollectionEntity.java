@@ -1,6 +1,6 @@
 package com.example.collections_backend.collections;
 
-import com.example.collections_backend.collections.collectionItem.CollectionItem;
+import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "_collection")
-public class Collection {
+public class CollectionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Collection {
     private String backgroundImage;
     private boolean isPrivate;
 
-    @OneToMany(mappedBy = "collection", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "collectionEntity", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<CollectionItem> items;
 
