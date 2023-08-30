@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @Setter
 @Builder
-public class NewCollectionDto {
+public class NewAndChangeCollectionDto {
     private String name;
     private String about;
     private String information;

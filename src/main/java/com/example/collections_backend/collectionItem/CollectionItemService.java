@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +45,9 @@ public class CollectionItemService {
         return "Success";
     }
 
-    public ArrayList<GetItemDto> get5topItems(CollectionEntity collectionEntity) {
-        ArrayList<CollectionItem> items = new ArrayList<>(collectionItemRepository.findTop5ByCollectionEntity(collectionEntity));
-        ArrayList<GetItemDto> dtos = new ArrayList<>();
+    public List<GetItemDto> get5topItems(CollectionEntity collectionEntity) {
+        List<CollectionItem> items = new ArrayList<>(collectionItemRepository.findTop5ByCollectionEntity(collectionEntity));
+        List<GetItemDto> dtos = new ArrayList<>();
         for (CollectionItem item : items) {
             String image = "";
             if(imagesItemRepository.findTop1ByCollectionItem(item).isPresent()) {
