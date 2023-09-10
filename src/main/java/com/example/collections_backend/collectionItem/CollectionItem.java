@@ -1,6 +1,7 @@
 package com.example.collections_backend.collectionItem;
 
 import com.example.collections_backend.collectionItem.itemImages.ImagesItem;
+import com.example.collections_backend.collectionItem.itemLikes.LikeItem;
 import com.example.collections_backend.collections.CollectionEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -28,6 +29,10 @@ public class CollectionItem {
     @OneToMany(mappedBy = "collectionItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<ImagesItem> images;
+
+    @OneToMany(mappedBy = "collectionItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<LikeItem> likes;
 
     @ManyToOne
     @JsonIgnore

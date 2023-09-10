@@ -58,6 +58,7 @@ public class CollectionItemService {
                     .itemName(item.getName())
                     .itemAbout(item.getAbout())
                     .itemImage(image)
+                    .itemId(item.getId())
                     .build();
             dtos.add(newItem);
         }

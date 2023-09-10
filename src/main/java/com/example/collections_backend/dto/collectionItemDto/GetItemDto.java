@@ -11,4 +11,5 @@ public class GetItemDto {
     private String itemName;
     private String itemAbout;
     private String itemImage;
+    private Long itemId;
 }

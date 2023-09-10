@@ -1,5 +1,7 @@
 package com.example.collections_backend.user;
 
+import com.example.collections_backend.collectionItem.CollectionItem;
+import com.example.collections_backend.collectionItem.itemLikes.LikeItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -8,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 
 @Getter
@@ -37,6 +40,10 @@ public class User implements UserDetails {
     private Role role;
     @JsonIgnore
     private Boolean isEnabled;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<LikeItem> like;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

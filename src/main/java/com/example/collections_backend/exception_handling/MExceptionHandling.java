@@ -81,4 +81,13 @@ public class MExceptionHandling {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED); //401
     }
 
+    @ExceptionHandler(SomethingNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFoundException(SomethingNotFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST); //400
+    }
+
 }
