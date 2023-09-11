@@ -22,6 +22,8 @@ public class CollectionItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private Integer countId;
+
     private String name;
     private String about;
     private String information;

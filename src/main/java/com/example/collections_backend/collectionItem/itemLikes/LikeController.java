@@ -23,10 +23,4 @@ public class LikeController {
 
         return ResponseEntity.ok(likeService.deleteLike(id));
     }
-
-    @GetMapping("/auth/like/isExist/{id}")
-    public ResponseEntity<Boolean> IsExistLike(@PathVariable Long id) {
-
-        return ResponseEntity.ok(likeService.isExistLike(id));
-    }
 }

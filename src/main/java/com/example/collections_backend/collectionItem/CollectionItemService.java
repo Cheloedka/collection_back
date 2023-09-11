@@ -1,11 +1,15 @@
 package com.example.collections_backend.collectionItem;
 
+import com.example.collections_backend.collectionItem.itemLikes.LikeRepository;
+import com.example.collections_backend.collectionItem.itemLikes.LikeService;
 import com.example.collections_backend.collections.CollectionEntity;
 import com.example.collections_backend.collections.CollectionManagementService;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemRepository;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemService;
-import com.example.collections_backend.dto.collectionItemDto.GetItemDto;
+import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
+import com.example.collections_backend.dto.collectionItemDto.GetShortItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
+import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,14 +27,20 @@ public class CollectionItemService {
     private final FileService fileService;
     private final ImagesItemService imagesItemService;
     private final ImagesItemRepository imagesItemRepository;
+    private final LikeService likeService;
+    private final LikeRepository likeRepository;
 
     public String newItem(NewItemDto request) throws IOException {
 
+        var collectionEntity = collectionManagementService.findById(request.getIdCollection());
+        var lastItem = collectionItemRepository.findTopByCollectionEntityOrderByCountIdDesc(collectionEntity);
+
         var item = CollectionItem.builder()
                 .name(request.getName())
+                .countId( lastItem.isPresent() ? lastItem.get().getCountId() + 1 : 1)
                 .about(request.getAbout())
                 .information(request.getInformation())
-                .collectionEntity(collectionManagementService.findById(request.getIdCollection()))
+                .collectionEntity(collectionEntity)
                 .build();
 
         collectionItemRepository.save(item);
@@ -45,24 +55,46 @@ public class CollectionItemService {
         return "Success";
     }
 
-    public List<GetItemDto> get5topItems(CollectionEntity collectionEntity) {
-        List<CollectionItem> items = new ArrayList<>(collectionItemRepository.findTop5ByCollectionEntity(collectionEntity));
-        List<GetItemDto> dtos = new ArrayList<>();
+    public List<GetShortItemInfoDto> get5topItems(CollectionEntity collectionEntity) {
+        List<CollectionItem> items = new ArrayList<>(
+                collectionItemRepository.findTop5ByCollectionEntity(collectionEntity)
+        );
+        List<GetShortItemInfoDto> dtos = new ArrayList<>();
         for (CollectionItem item : items) {
+
             String image = "";
             if(imagesItemRepository.findTop1ByCollectionItem(item).isPresent()) {
-                image = imagesItemRepository.findTop1ByCollectionItem(item).get().getName();
+                image = imagesItemRepository.findTop1ByCollectionItem(item)
+                        .get()
+                        .getName();
             }
 
-            var newItem = GetItemDto.builder()
+            var newItem = GetShortItemInfoDto.builder()
                     .itemName(item.getName())
                     .itemAbout(item.getAbout())
                     .itemImage(image)
+                    .countId(item.getCountId())
                     .itemId(item.getId())
+                    .liked(likeService.isExistLike(item.getId()))
                     .build();
             dtos.add(newItem);
         }
 
         return dtos;
+    }
+    public GetItemInfoDto getItemInfo(Integer idItem, Long idCollection) {
+        var item = collectionItemRepository
+                .findByCollectionEntityAndAndCountId(collectionManagementService.findById(idCollection), idItem)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return GetItemInfoDto.builder()
+                .name(item.getName())
+                .about(item.getAbout())
+                .information(item.getInformation())
+                .images(imagesItemRepository.findAllByCollectionItem(item))
+                .liked(likeService.isExistLike(item.getId()))
+                .itemId(item.getId())
+                .likesCount(likeRepository.countAllByCollectionItem(item))
+                .build();
     }
 }

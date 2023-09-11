@@ -15,11 +15,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Table(name = "_images_collection_item")
 public class ImagesItem {
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+    @JsonIgnore
     private LocalDateTime date;
 
     @ManyToOne

@@ -40,7 +40,7 @@ public class LikeService {
         return "Deleted";
     }
 
-    public Boolean isExistLike(Long id) {
+    public boolean isExistLike(Long id) {
         return likeRepository.existsByCollectionItemAndUser(getItem(id), userManagementService.getCurrentUser());
 
     }
