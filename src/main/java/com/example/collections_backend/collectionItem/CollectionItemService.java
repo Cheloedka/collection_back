@@ -6,6 +6,7 @@ import com.example.collections_backend.collections.CollectionEntity;
 import com.example.collections_backend.collections.CollectionManagementService;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemRepository;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemService;
+import com.example.collections_backend.dto.collectionItemDto.GetSetItemForEditorDto;
 import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.GetShortItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
@@ -29,6 +30,14 @@ public class CollectionItemService {
     private final ImagesItemRepository imagesItemRepository;
     private final LikeService likeService;
     private final LikeRepository likeRepository;
+
+
+
+    private CollectionItem getItemByIdCollectionAndIdItem(Integer idItem, Long idCollection) {
+        return collectionItemRepository
+                .findByCollectionEntityAndAndCountId(collectionManagementService.findById(idCollection), idItem)
+                .orElseThrow(EntityNotFoundException::new);
+    }
 
     public String newItem(NewItemDto request) throws IOException {
 
@@ -83,9 +92,7 @@ public class CollectionItemService {
         return dtos;
     }
     public GetItemInfoDto getItemInfo(Integer idItem, Long idCollection) {
-        var item = collectionItemRepository
-                .findByCollectionEntityAndAndCountId(collectionManagementService.findById(idCollection), idItem)
-                .orElseThrow(EntityNotFoundException::new);
+        var item = getItemByIdCollectionAndIdItem(idItem, idCollection);
 
         return GetItemInfoDto.builder()
                 .name(item.getName())
@@ -95,6 +102,20 @@ public class CollectionItemService {
                 .liked(likeService.isExistLike(item.getId()))
                 .itemId(item.getId())
                 .likesCount(likeRepository.countAllByCollectionItem(item))
+                .isPrivate(item.getCollectionEntity().isPrivate())
                 .build();
     }
+
+    public GetSetItemForEditorDto getItemForEditor(Integer idItem, Long idCollection) {
+        var item = getItemByIdCollectionAndIdItem(idItem, idCollection);
+
+        return GetSetItemForEditorDto.builder()
+                .name(item.getName())
+                .about(item.getAbout())
+                .information(item.getInformation())
+                .images(imagesItemRepository.findAllByCollectionItem(item))
+                .build();
+    }
+
+
 }

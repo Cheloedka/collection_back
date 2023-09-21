@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {
     Iterable<CollectionEntity> findAllByUser(User user);
-    Iterable<CollectionEntity> findTop3ByUserAndIsPrivate(User user, boolean isPrivate);
+    Iterable<CollectionEntity> findTop3ByUserAndIsPrivateOrderByIdCollection(User user, boolean isPrivate);
     Optional<CollectionEntity> findByUserAndIdCollection(User user, Long id);
     Long countAllByUser(User user);
 }

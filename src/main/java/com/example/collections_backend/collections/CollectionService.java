@@ -4,6 +4,7 @@ import com.example.collections_backend.collectionItem.CollectionItemRepository;
 import com.example.collections_backend.collectionItem.CollectionItemService;
 import com.example.collections_backend.dto.collectionDto.NewAndChangeCollectionDto;
 import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
+import com.example.collections_backend.dto.collectionDto.RightInfoInCollectionAndItemPageDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.user.UserManagementService;
@@ -20,17 +21,30 @@ public class CollectionService {
     private final UserManagementService userManagementService;
     private final CollectionItemService collectionItemService;
     private final CollectionItemRepository collectionItemRepository;
+    private final CollectionManagementService collectionManagementService;
     private final FileService fileService;
 
     public Iterable<CollectionEntity> getCollectionsInfo(String username) {
         return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
     }
 
+    public RightInfoInCollectionAndItemPageDto getRightInfo(Long id) {
+        var collection = collectionManagementService.findById(id);
+
+        return RightInfoInCollectionAndItemPageDto.builder()
+                .nameCollection(collection.getName())
+                .aboutCollection(collection.getAbout())
+                .imageCollection(collection.getImage())
+                .firstName(collection.getUser().getName())
+                .surname(collection.getUser().getSurname())
+                .userImage(collection.getUser().getImage())
+                .build();
+    }
+
     public ReturnCollectionDto getCollectionInfo(Long id, String username){
         var collection = collectionRepository
                 .findByUserAndIdCollection(userManagementService.getUserByUsername(username), id)
                 .orElseThrow(EntityNotFoundException::new);
-        var user = collection.getUser();
         return ReturnCollectionDto.builder()
                 .name(collection.getName())
                 .about(collection.getAbout())
@@ -38,9 +52,6 @@ public class CollectionService {
                 .image(collection.getImage())
                 .backgroundImage(collection.getBackgroundImage())
                 .isPrivate(collection.isPrivate())
-                .userFirstName(user.getName())
-                .userSurname(user.getSurname())
-                .userImage(user.getImage())
                 .items(collectionItemService.get5topItems(collection))
                 .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
                 .build();

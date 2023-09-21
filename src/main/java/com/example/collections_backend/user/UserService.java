@@ -33,7 +33,7 @@ public class UserService {
                 .image(user.getImage())
                 .backgroundImage(user.getBackgroundImage())
                 .countCollections(collectionRepository.countAllByUser(user))
-                .collections(collectionRepository.findTop3ByUserAndIsPrivate(user, false))
+                .collections(collectionRepository.findTop3ByUserAndIsPrivateOrderByIdCollection(user, false))
                 .countFriendships(friendshipRepository
                         .countAllByFollower(user)
                         .orElseThrow(EntityNotFoundException::new))

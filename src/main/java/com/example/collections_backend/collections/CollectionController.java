@@ -2,6 +2,7 @@ package com.example.collections_backend.collections;
 
 import com.example.collections_backend.dto.collectionDto.NewAndChangeCollectionDto;
 import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
+import com.example.collections_backend.dto.collectionDto.RightInfoInCollectionAndItemPageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +40,11 @@ public class CollectionController {
             @PathVariable(value = "idCollection") Long id
     ) throws IOException {
         return ResponseEntity.ok(collectionService.changeCollection(request, id));
+    }
+
+    @GetMapping("collection/{idCollection}/getRightInfo")
+    public RightInfoInCollectionAndItemPageDto getRightInfo(@PathVariable Long idCollection) {
+        return collectionService.getRightInfo(idCollection);
     }
 
 

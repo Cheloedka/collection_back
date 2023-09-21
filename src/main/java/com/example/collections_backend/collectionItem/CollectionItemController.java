@@ -1,5 +1,6 @@
 package com.example.collections_backend.collectionItem;
 
+import com.example.collections_backend.dto.collectionItemDto.GetSetItemForEditorDto;
 import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +21,17 @@ public class CollectionItemController {
         return ResponseEntity.ok(collectionItemService.newItem(request));
     }
 
+    @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")
+    public GetSetItemForEditorDto getItemForEditor(@PathVariable(value = "idCollection") Long idCollection,
+                                                   @PathVariable(value = "idItem") Integer idItem
+                                                ) {
+        return collectionItemService.getItemForEditor(idItem, idCollection);
+    }
+
     @GetMapping("item/{idCollection}/{idItem}")
     public GetItemInfoDto getItem(@PathVariable(value = "idCollection") Long idCollection,
                                   @PathVariable(value = "idItem") Integer idItem
-                                  ){
+                                  ) {
         return collectionItemService.getItemInfo(idItem, idCollection);
     }
 }

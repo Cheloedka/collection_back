@@ -16,9 +16,6 @@ public class ReturnCollectionDto {
     private String image;
     private String backgroundImage;
     private boolean isPrivate;
-    private String userFirstName;
-    private String userSurname;
-    private String userImage;
     private List<GetShortItemInfoDto> items = new ArrayList<>();
     private Long countItems;
 }
