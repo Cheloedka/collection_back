@@ -1,5 +1,6 @@
 package com.example.collections_backend.collectionItem;
 
+import com.example.collections_backend.dto.collectionItemDto.EditItemDto;
 import com.example.collections_backend.dto.collectionItemDto.GetSetItemForEditorDto;
 import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
@@ -17,7 +18,7 @@ public class CollectionItemController {
     private final CollectionItemService collectionItemService;
 
     @PostMapping(value = "auth/item/new", consumes = "multipart/form-data")
-    public ResponseEntity<String> addItem(@ModelAttribute NewItemDto request) throws IOException {
+    public ResponseEntity<String> addItem(@ModelAttribute NewItemDto request) {
         return ResponseEntity.ok(collectionItemService.newItem(request));
     }
 
@@ -33,5 +34,12 @@ public class CollectionItemController {
                                   @PathVariable(value = "idItem") Integer idItem
                                   ) {
         return collectionItemService.getItemInfo(idItem, idCollection);
+    }
+
+    @PutMapping(value = "auth/item/edit", consumes = "multipart/form-data")
+    public ResponseEntity<String> editItem(@ModelAttribute EditItemDto editItemDto) {
+
+        collectionItemService.editItem(editItemDto);
+        return ResponseEntity.ok("Success");
     }
 }

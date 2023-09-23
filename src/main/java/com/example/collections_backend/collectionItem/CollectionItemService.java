@@ -1,23 +1,23 @@
 package com.example.collections_backend.collectionItem;
 
+import com.example.collections_backend.collectionItem.itemImages.ImagesItem;
 import com.example.collections_backend.collectionItem.itemLikes.LikeRepository;
 import com.example.collections_backend.collectionItem.itemLikes.LikeService;
 import com.example.collections_backend.collections.CollectionEntity;
 import com.example.collections_backend.collections.CollectionManagementService;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemRepository;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemService;
-import com.example.collections_backend.dto.collectionItemDto.GetSetItemForEditorDto;
-import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
-import com.example.collections_backend.dto.collectionItemDto.GetShortItemInfoDto;
-import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
+import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
+import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -35,11 +35,11 @@ public class CollectionItemService {
 
     private CollectionItem getItemByIdCollectionAndIdItem(Integer idItem, Long idCollection) {
         return collectionItemRepository
-                .findByCollectionEntityAndAndCountId(collectionManagementService.findById(idCollection), idItem)
+                .findByCollectionEntityAndCountId(collectionManagementService.findById(idCollection), idItem)
                 .orElseThrow(EntityNotFoundException::new);
     }
 
-    public String newItem(NewItemDto request) throws IOException {
+    public String newItem(NewItemDto request) {
 
         var collectionEntity = collectionManagementService.findById(request.getIdCollection());
         var lastItem = collectionItemRepository.findTopByCollectionEntityOrderByCountIdDesc(collectionEntity);
@@ -55,30 +55,57 @@ public class CollectionItemService {
         collectionItemRepository.save(item);
 
         if (request.getImages() != null) {
-            imagesItemService.saveImages(
-                    fileService.uploadItemImages(request.getImages()),
-                    item
-            );
+            imagesItemService.saveImages(fileService.uploadItemImages(request.getImages()), item);
         }
 
         return "Success";
     }
 
+    public void editItem(EditItemDto request) {
+        var item = getItemByIdCollectionAndIdItem(request.getCountId(), request.getIdCollection());
+
+        ConsumerFunctions.setIfNotNull(request.getName(), item::setName);
+        ConsumerFunctions.setIfNotNull(request.getAbout(), item::setAbout);
+        ConsumerFunctions.setIfNotNull(request.getInformation(), item::setInformation);
+
+        if (request.getOldImages() != null) {
+            List<String> itemImages = imagesItemRepository.findAllByCollectionItem(item).stream()
+                    .map(ImagesItem::getName)
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+
+            List<String> imagesToDelete = fileService.changeItemImages(request.getOldImages(), itemImages);
+
+            if (imagesToDelete.size() > 0) {
+                imagesItemService.deleteImages(imagesToDelete);
+            }
+        }
+
+
+        if (request.getNewImages() != null) {
+            imagesItemService.saveImages(
+                    fileService.uploadItemImages(request.getNewImages()),
+                    item
+            );
+        }
+
+
+        collectionItemRepository.save(item);
+    }
+
+
     public List<GetShortItemInfoDto> get5topItems(CollectionEntity collectionEntity) {
-        List<CollectionItem> items = new ArrayList<>(
-                collectionItemRepository.findTop5ByCollectionEntity(collectionEntity)
-        );
-        List<GetShortItemInfoDto> dtos = new ArrayList<>();
-        for (CollectionItem item : items) {
+        List<CollectionItem> items = collectionItemRepository.findTop5ByCollectionEntity(collectionEntity);
+
+        return items.stream().map(item -> {
 
             String image = "";
-            if(imagesItemRepository.findTop1ByCollectionItem(item).isPresent()) {
-                image = imagesItemRepository.findTop1ByCollectionItem(item)
-                        .get()
-                        .getName();
+            var optional = imagesItemRepository.findTop1ByCollectionItem(item);
+            if (optional.isPresent()) {
+                image = optional.get().getName();
             }
 
-            var newItem = GetShortItemInfoDto.builder()
+            return GetShortItemInfoDto.builder()
                     .itemName(item.getName())
                     .itemAbout(item.getAbout())
                     .itemImage(image)
@@ -86,11 +113,9 @@ public class CollectionItemService {
                     .itemId(item.getId())
                     .liked(likeService.isExistLike(item.getId()))
                     .build();
-            dtos.add(newItem);
-        }
-
-        return dtos;
+        }).toList();
     }
+
     public GetItemInfoDto getItemInfo(Integer idItem, Long idCollection) {
         var item = getItemByIdCollectionAndIdItem(idItem, idCollection);
 
@@ -116,6 +141,4 @@ public class CollectionItemService {
                 .images(imagesItemRepository.findAllByCollectionItem(item))
                 .build();
     }
-
-
 }

@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ImagesItemRepository extends JpaRepository<ImagesItem, Long> {
-    Optional<ImagesItem> findTop1ByCollectionItem(CollectionItem collectionItem);
 
+    Optional<ImagesItem> findTop1ByCollectionItem(CollectionItem collectionItem);
     List<ImagesItem> findAllByCollectionItem(CollectionItem collectionItem);
+    Optional<ImagesItem> findByName(String name);
 }

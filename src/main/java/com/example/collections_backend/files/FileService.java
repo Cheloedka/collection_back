@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -29,15 +30,31 @@ public class FileService {
         return IOUtils.toByteArray(destination.toUri());
     }
 
-    public ArrayList<String> uploadItemImages(ArrayList<MultipartFile> images) throws IOException {
+    public List<String> uploadItemImages(List<MultipartFile> images) {
 
-        ArrayList<String> newImages = new ArrayList<>();
+        return images.stream()
+                .map(image -> {
+                    try {
+                        return uploadFile(image);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+        })
+                .toList();
+    }
 
-        for (MultipartFile image : images) {
-            newImages.add(uploadFile(image));
+    public List<String> changeItemImages(List<String> oldImages, List<String> itemImages) {
+        itemImages.removeAll(oldImages);
+        if (itemImages.size() != 0) {
+            itemImages.forEach(image -> {
+                try {
+                    deleteImageFromStorage(image);
+                } catch (FileNotFoundException e) {
+                    throw new FileDeleteFailedException();
+                }
+            });
         }
-
-        return newImages;
+        return itemImages;
     }
 
     public String uploadFile(MultipartFile file) throws IOException {

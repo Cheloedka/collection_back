@@ -8,11 +8,13 @@ import com.example.collections_backend.dto.collectionDto.RightInfoInCollectionAn
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.user.UserManagementService;
+import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,8 +26,13 @@ public class CollectionService {
     private final CollectionManagementService collectionManagementService;
     private final FileService fileService;
 
-    public Iterable<CollectionEntity> getCollectionsInfo(String username) {
+    public List<CollectionEntity> getCollectionsInfo(String username) {
         return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
+    }
+
+    public Boolean isUserOwner(Long id) {
+        return collectionManagementService.findById(id).getUser().getName()
+                .equals(userManagementService.getCurrentUser().getName());
     }
 
     public RightInfoInCollectionAndItemPageDto getRightInfo(Long id) {
@@ -42,9 +49,11 @@ public class CollectionService {
     }
 
     public ReturnCollectionDto getCollectionInfo(Long id, String username){
+
         var collection = collectionRepository
                 .findByUserAndIdCollection(userManagementService.getUserByUsername(username), id)
                 .orElseThrow(EntityNotFoundException::new);
+
         return ReturnCollectionDto.builder()
                 .name(collection.getName())
                 .about(collection.getAbout())
@@ -70,7 +79,7 @@ public class CollectionService {
                 .backgroundImage(
                         isImageNotNullUpload(request.getBackgroundImage())
                 )
-                .isPrivate(request.isPrivate())
+                .isPrivate(request.getIsPrivate())
                 .build();
 
         collectionRepository.save(collection);
@@ -81,22 +90,19 @@ public class CollectionService {
     public String changeCollection(NewAndChangeCollectionDto request, Long id) throws IOException {
 
         var collection = collectionRepository.findById( id).orElseThrow(EntityNotFoundException::new);
-        if (request.getName() != null) {
-            collection.setName(request.getName());
-        }
-        if (request.getAbout() != null) {
-            collection.setAbout(request.getAbout());
-        }
-        if (request.getInformation() != null) {
-            collection.setInformation(request.getInformation());
-        }
-        if (request.isPrivate() != collection.isPrivate()) {
-            collection.setPrivate(request.isPrivate());
+
+
+        ConsumerFunctions.setIfNotNull(request.getName(), collection::setName);
+        ConsumerFunctions.setIfNotNull(request.getAbout(), collection::setAbout);
+        ConsumerFunctions.setIfNotNull(request.getInformation(), collection::setInformation);
+
+        if (request.getIsPrivate() != collection.isPrivate()) {
+            collection.setPrivate(request.getIsPrivate());
         }
 
         if (request.getBackgroundImage() != null) {
 
-            if (!collection.getBackgroundImage().isEmpty()) {
+            if (!collection.getBackgroundImage().equals("")) {
                 fileService.deleteImageFromStorage(
                         collection.getBackgroundImage()
                 );
@@ -108,7 +114,7 @@ public class CollectionService {
 
         if (request.getImage() != null) {
 
-            if (!collection.getImage().isEmpty()) {
+            if (!collection.getImage().equals("")) {
                 fileService.deleteImageFromStorage(
                         collection.getImage()
                 );

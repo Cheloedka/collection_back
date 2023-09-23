@@ -13,5 +13,5 @@ public class NewAndChangeCollectionDto {
     private String information;
     private MultipartFile image;
     private MultipartFile backgroundImage;
-    private boolean isPrivate;
+    private Boolean isPrivate;
 }

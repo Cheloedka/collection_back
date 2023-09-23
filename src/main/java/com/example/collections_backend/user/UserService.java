@@ -7,6 +7,7 @@ import com.example.collections_backend.exception_handling.exceptions.SomethingAl
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.friendship.FriendshipRepository;
 import com.example.collections_backend.friendship.FriendshipService;
+import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -61,19 +62,20 @@ public class UserService {
 
     public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
         var user = userManagementService.getUserByUsername(username);
-        if (request.getName() != null)
-            user.setName(request.getName());
-        if (request.getSurname() != null)
-            user.setSurname(request.getSurname());
-        if (request.getImage() != null) {
-            fileService.deleteImageFromStorage(user.getImage());
-            user.setImage(fileService.uploadFile(request.getImage()));
-        }
-        if (request.getNickname() != null)
+
+        ConsumerFunctions.setIfNotNull(request.getName(), user::setName);
+        ConsumerFunctions.setIfNotNull(request.getSurname(), user::setSurname);
+        ConsumerFunctions.setIfNotNull(request.getNickname(), nick -> {
             if (userRepository.existsUserByUsername(request.getNickname()))
                 throw new SomethingAlreadyExist("Username Already Exist");
             else
                 user.setUsername(request.getNickname());
+        });
+
+        if (request.getImage() != null) {
+            fileService.deleteImageFromStorage(user.getImage());
+            user.setImage(fileService.uploadFile(request.getImage()));
+        }
 
         userRepository.save(user);
 

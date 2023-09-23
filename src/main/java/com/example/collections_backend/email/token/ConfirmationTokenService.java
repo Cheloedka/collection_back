@@ -25,7 +25,6 @@ public class ConfirmationTokenService {
                 .confirmationType(type)
                 .message(message)
                 .build();
-        System.out.println(confirmationToken);
 
         saveConfirmationToken(confirmationToken);
         return token;
@@ -40,7 +39,6 @@ public class ConfirmationTokenService {
                 .userId(id)
                 .confirmationType(type)
                 .build();
-        System.out.println(confirmationToken);
 
         saveConfirmationToken(confirmationToken);
         return token;

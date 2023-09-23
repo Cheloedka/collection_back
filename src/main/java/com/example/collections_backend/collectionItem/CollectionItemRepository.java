@@ -12,6 +12,6 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
     ArrayList<CollectionItem> findTop5ByCollectionEntity(CollectionEntity collectionEntity);
     Long countAllByCollectionEntity(CollectionEntity collectionEntity);
     Optional<CollectionItem> findTopByCollectionEntityOrderByCountIdDesc(CollectionEntity collectionEntity);
-    Optional<CollectionItem> findByCollectionEntityAndAndCountId(CollectionEntity collectionEntity, Integer countId);
+    Optional<CollectionItem> findByCollectionEntityAndCountId(CollectionEntity collectionEntity, Integer countId);
 
 }

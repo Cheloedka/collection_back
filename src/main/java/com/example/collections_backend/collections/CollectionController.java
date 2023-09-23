@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
@@ -16,7 +17,7 @@ public class CollectionController {
     private final CollectionService collectionService;
 
     @GetMapping("collections/{username}")
-    public Iterable<CollectionEntity> getCollectionsInfo(@PathVariable(value = "username") String username) {
+    public List<CollectionEntity> getCollectionsInfo(@PathVariable(value = "username") String username) {
         return collectionService.getCollectionsInfo(username);
     }
 
@@ -47,5 +48,9 @@ public class CollectionController {
         return collectionService.getRightInfo(idCollection);
     }
 
+    @GetMapping("collection/{idCollection}/isUserOwner")
+    public Boolean checkIsUserOwner(@PathVariable Long idCollection) {
+        return collectionService.isUserOwner(idCollection);
+    }
 
 }

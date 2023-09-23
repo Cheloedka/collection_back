@@ -2,8 +2,6 @@ package com.example.collections_backend.collectionItem.itemLikes;
 
 import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
-import com.example.collections_backend.collectionItem.CollectionItemService;
-import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +32,7 @@ public class LikeService {
         )
                 .orElseThrow(() -> new SomethingNotFoundException("Like not found"));
 
-
         likeRepository.delete(like);
-
         return "Deleted";
     }
 
