@@ -1,5 +1,6 @@
 package com.example.collections_backend.collections;
 
+import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
 import com.example.collections_backend.collectionItem.CollectionItemService;
 import com.example.collections_backend.dto.collectionDto.NewAndChangeCollectionDto;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -28,6 +30,24 @@ public class CollectionService {
 
     public List<CollectionEntity> getCollectionsInfo(String username) {
         return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
+    }
+
+    public void deleteCollection(Long id) throws FileNotFoundException {
+        var collection = collectionManagementService.findById(id);
+        if (!collection.getImage().equals("")) {
+            fileService.deleteImageFromStorage(collection.getImage());
+        }
+        if(!collection.getBackgroundImage().equals("")) {
+            fileService.deleteImageFromStorage(collection.getBackgroundImage());
+        }
+
+        List<CollectionItem> items = collectionItemRepository.findAllByCollectionEntity(collection);
+
+        if(items.size() != 0) {
+            items.forEach(collectionItemService::deleteAllImagesFromStorageByItem);
+        }
+
+        collectionRepository.deleteById(id);
     }
 
     public Boolean isUserOwner(Long id) {

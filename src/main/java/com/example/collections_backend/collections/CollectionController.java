@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -51,6 +52,12 @@ public class CollectionController {
     @GetMapping("collection/{idCollection}/isUserOwner")
     public Boolean checkIsUserOwner(@PathVariable Long idCollection) {
         return collectionService.isUserOwner(idCollection);
+    }
+
+    @DeleteMapping("auth/collection/delete/{idCollection}")
+    public ResponseEntity<String> deleteCollection(@PathVariable Long idCollection) throws FileNotFoundException {
+        collectionService.deleteCollection(idCollection);
+        return ResponseEntity.ok("Success");
     }
 
 }

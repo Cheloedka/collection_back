@@ -23,23 +23,30 @@ public class CollectionItemController {
     }
 
     @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")
-    public GetSetItemForEditorDto getItemForEditor(@PathVariable(value = "idCollection") Long idCollection,
-                                                   @PathVariable(value = "idItem") Integer idItem
+    public GetSetItemForEditorDto getItemForEditor(@PathVariable Long idCollection,
+                                                   @PathVariable Integer idItem
                                                 ) {
         return collectionItemService.getItemForEditor(idItem, idCollection);
     }
 
-    @GetMapping("item/{idCollection}/{idItem}")
-    public GetItemInfoDto getItem(@PathVariable(value = "idCollection") Long idCollection,
-                                  @PathVariable(value = "idItem") Integer idItem
+    @GetMapping("item/{username}/{idCollection}/{idItem}")
+    public GetItemInfoDto getItem(@PathVariable Long idCollection,
+                                  @PathVariable Integer idItem,
+                                  @PathVariable String username
                                   ) {
-        return collectionItemService.getItemInfo(idItem, idCollection);
+        return collectionItemService.getItemInfo(idItem, idCollection, username);
     }
 
     @PutMapping(value = "auth/item/edit", consumes = "multipart/form-data")
     public ResponseEntity<String> editItem(@ModelAttribute EditItemDto editItemDto) {
 
         collectionItemService.editItem(editItemDto);
+        return ResponseEntity.ok("Success");
+    }
+
+    @DeleteMapping("auth/item/delete/{idItem}")
+    public ResponseEntity<String> deleteItem (@PathVariable Long idItem) {
+        collectionItemService.deleteItem(idItem);
         return ResponseEntity.ok("Success");
     }
 }
