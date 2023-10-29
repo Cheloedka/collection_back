@@ -1,6 +1,5 @@
 package com.example.collections_backend.user;
 
-import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.collectionItem.itemLikes.LikeItem;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -46,6 +45,7 @@ public class User implements UserDetails {
     private List<LikeItem> like;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }

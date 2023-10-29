@@ -25,8 +25,15 @@ public class UserService {
     private final FileService fileService;
     private final UserManagementService userManagementService;
 
+
+    private User getUserByUsername(String username) {
+        return  userManagementService.getUserByUsername(username);
+    }
+
     public UserPageDto getUserPageInfo(String username){
-        var user = userManagementService.getUserByUsername(username);
+
+        var user = getUserByUsername(username);
+
         return UserPageDto.builder()
                 .username(username)
                 .name(user.getName())
@@ -44,7 +51,10 @@ public class UserService {
     }
 
     public UserSettingsDto getUserSettingsInfo(String username){
-        var user = userManagementService.getUserByUsername(username);
+
+        var user = getUserByUsername(username);
+
+
         return UserSettingsDto.builder()
                 .email(user.getEmail())
                 .name(user.getName())
@@ -53,7 +63,9 @@ public class UserService {
     }
 
     public UserNavInfoDto getUserNavInfo() {
+
         var user = userManagementService.getCurrentUser();
+
         return UserNavInfoDto.builder()
                 .username(user.getNickname())
                 .image(user.getImage())
@@ -61,7 +73,8 @@ public class UserService {
     }
 
     public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
-        var user = userManagementService.getUserByUsername(username);
+
+        var user = getUserByUsername(username);
 
         ConsumerFunctions.setIfNotNull(request.getName(), user::setName);
         ConsumerFunctions.setIfNotNull(request.getSurname(), user::setSurname);

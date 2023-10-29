@@ -14,8 +14,9 @@ public class ReturnCollectionDto {
     private String about;
     private String information;
     private String image;
+    private Long id;
     private String backgroundImage;
-    private boolean isPrivate;
+    private boolean collectionPrivate;
     private List<GetShortItemInfoDto> items = new ArrayList<>();
     private Long countItems;
 }

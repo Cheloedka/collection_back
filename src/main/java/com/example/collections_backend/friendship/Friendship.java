@@ -18,7 +18,7 @@ public class Friendship {
     Long idFriendship;
 
     @ManyToOne
-    private User follower;
+    private User follower; //someone who follow on
 
     @ManyToOne
     private User user;

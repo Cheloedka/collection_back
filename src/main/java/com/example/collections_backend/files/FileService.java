@@ -1,5 +1,6 @@
 package com.example.collections_backend.files;
 
+import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.FileDeleteFailedException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
@@ -8,11 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -46,13 +45,7 @@ public class FileService {
     public List<String> changeItemImages(List<String> oldImages, List<String> itemImages) {
         itemImages.removeAll(oldImages);
         if (itemImages.size() != 0) {
-            itemImages.forEach(image -> {
-                try {
-                    deleteImageFromStorage(image);
-                } catch (FileNotFoundException e) {
-                    throw new FileDeleteFailedException();
-                }
-            });
+            itemImages.forEach(this::deleteImageFromStorage);
         }
         return itemImages;
     }
@@ -75,15 +68,15 @@ public class FileService {
             return filename.substring( lastDot );
     }
 
-    public void deleteImageFromStorage(String filename) throws FileNotFoundException {
+    public void deleteImageFromStorage(String filename) {
         File file = new File(path + filename);
-        if(file.exists()) {
-            if(!file.delete()) {
+        if (file.exists()) {
+            if (!file.delete()) {
                 throw new FileDeleteFailedException();
             }
         }
         else {
-            throw new FileNotFoundException();
+            throw new EntityNotFoundException();
         }
     }
 

@@ -14,9 +14,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +29,32 @@ public class CollectionService {
     private final CollectionManagementService collectionManagementService;
     private final FileService fileService;
 
-    public List<CollectionEntity> getCollectionsInfo(String username) {
-        return collectionRepository.findAllByUser(userManagementService.getUserByUsername(username));
+    public List<ReturnCollectionDto> getCollectionsInfo(String username) {
+
+        var user = userManagementService.getUserByUsername(username);
+        List<CollectionEntity> collections = new ArrayList<>();
+
+        if (userManagementService.getUserByUsername(username).equals(userManagementService.getCurrentUser())) {
+            collections.addAll(collectionRepository.findAllByUser(user));
+        }
+        else {
+            collections.addAll(collectionRepository.findAllByUserAndIsPrivate(user, false));
+        }
+        return collections.stream()
+                .map(el -> ReturnCollectionDto
+                        .builder()
+                        .name(el.getName())
+                        .about(el.getAbout())
+                        .image(el.getImage())
+                        .id(el.getIdCollection())
+                        .countItems(collectionItemRepository.countAllByCollectionEntity(el))
+                        .collectionPrivate(el.isPrivate())
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
-    public void deleteCollection(Long id) throws FileNotFoundException {
+    public void deleteCollection(Long id) {
         var collection = collectionManagementService.findById(id);
         if (!collection.getImage().equals("")) {
             fileService.deleteImageFromStorage(collection.getImage());
@@ -80,7 +102,7 @@ public class CollectionService {
                 .information(collection.getInformation())
                 .image(collection.getImage())
                 .backgroundImage(collection.getBackgroundImage())
-                .isPrivate(collection.isPrivate())
+                .collectionPrivate(collection.isPrivate())
                 .items(collectionItemService.get5topItems(collection))
                 .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
                 .build();

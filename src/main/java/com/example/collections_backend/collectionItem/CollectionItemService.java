@@ -9,15 +9,11 @@ import com.example.collections_backend.collectionItem.itemImages.ImagesItemRepos
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemService;
 import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
-import com.example.collections_backend.exception_handling.exceptions.FileDeleteFailedException;
-import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import com.example.collections_backend.files.FileService;
-import com.example.collections_backend.user.UserManagementService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,16 +41,8 @@ public class CollectionItemService {
     public void deleteAllImagesFromStorageByItem(CollectionItem item) {
         List<ImagesItem> images = imagesItemRepository.findAllByCollectionItem(item);
         if (images.size() != 0) {
-            images.forEach(image -> {
-                try {
-                    fileService.deleteImageFromStorage(image.getName());
-                } catch (FileNotFoundException e) {
-                    throw new FileDeleteFailedException();
-                }
-            });
+            images.forEach(image -> fileService.deleteImageFromStorage(image.getName()));
         }
-
-        //todo something wrong with exception
     }
 
     public void deleteItem(Long id) {
@@ -71,7 +59,7 @@ public class CollectionItemService {
 
         var item = CollectionItem.builder()
                 .name(request.getName())
-                .countId( lastItem.isPresent() ? lastItem.get().getCountId() + 1 : 1)
+                .countId(lastItem.map(collectionItem -> collectionItem.getCountId() + 1).orElse(1))
                 .about(request.getAbout())
                 .information(request.getInformation())
                 .collectionEntity(collectionEntity)

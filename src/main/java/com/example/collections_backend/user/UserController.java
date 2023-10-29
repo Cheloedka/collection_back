@@ -24,13 +24,17 @@ public class UserController {
 
     }
     @GetMapping("/user/{username}")
-    public UserPageDto getUserPageInfo(@PathVariable(value = "username") String username) {
+    public UserPageDto getUserPageInfo(
+            @PathVariable(value = "username") String username
+    ) {
 
         return userService.getUserPageInfo(username);
     }
 
     @GetMapping("/auth/user/{username}/settings")
-    public UserSettingsDto getUserSettingsInfo(@PathVariable(value = "username") String username) {
+    public UserSettingsDto getUserSettingsInfo(
+            @PathVariable(value = "username") String username
+    ) {
 
         return userService.getUserSettingsInfo(username);
     }
