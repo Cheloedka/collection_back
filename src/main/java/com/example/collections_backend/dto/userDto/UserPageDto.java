@@ -1,8 +1,11 @@
 package com.example.collections_backend.dto.userDto;
 
-import com.example.collections_backend.collections.CollectionEntity;
+import com.example.collections_backend.dto.CollectionBasicInfo;
+import com.example.collections_backend.dto.UserBasicInfoDto;
 import com.example.collections_backend.friendship.Friendship;
 import lombok.*;
+
+import java.util.List;
 
 
 @Getter
@@ -15,8 +18,8 @@ public class UserPageDto {
     private String image;
     private String backgroundImage;
     private Long countCollections;
-    private Iterable<CollectionEntity> collections;
+    private List<CollectionBasicInfo> collections;
     private Long countFriendships;
-    private Iterable<Friendship> friendships;
+    private List<UserBasicInfoDto> friendships;
     private boolean isFollower;
 }

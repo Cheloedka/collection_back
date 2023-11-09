@@ -10,7 +10,7 @@ public interface CollectionRepository extends JpaRepository<CollectionEntity, Lo
 
     List<CollectionEntity> findAllByUser(User user);
     List<CollectionEntity> findAllByUserAndIsPrivate(User user, boolean isPrivate);
-    Iterable<CollectionEntity> findTop3ByUserAndIsPrivateOrderByIdCollection(User user, boolean isPrivate);
+    List<CollectionEntity> findTop3ByUserAndIsPrivateOrderByIdCollection(User user, boolean isPrivate);
     Optional<CollectionEntity> findByUserAndIdCollection(User user, Long id);
-    Long countAllByUser(User user);
+    Long countAllByUserAndIsPrivate(User user, boolean isPrivate);
 }

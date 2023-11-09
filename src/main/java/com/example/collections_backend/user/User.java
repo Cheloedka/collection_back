@@ -27,16 +27,19 @@ public class User implements UserDetails {
     private String username;
     private String name;
     private String surname;
+
     @JsonIgnore
     private String email;
     @JsonIgnore
     private String password;
+
     private String image;
     private String backgroundImage;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role;
+
     @JsonIgnore
     private Boolean isEnabled;
 
@@ -45,7 +48,6 @@ public class User implements UserDetails {
     private List<LikeItem> like;
 
     @Override
-    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }

@@ -1,10 +1,13 @@
 package com.example.collections_backend.user;
 
 import com.example.collections_backend.collections.CollectionRepository;
+import com.example.collections_backend.dto.CollectionBasicInfo;
+import com.example.collections_backend.dto.UserBasicInfoDto;
 import com.example.collections_backend.dto.userDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
 import com.example.collections_backend.files.FileService;
+import com.example.collections_backend.friendship.Friendship;
 import com.example.collections_backend.friendship.FriendshipRepository;
 import com.example.collections_backend.friendship.FriendshipService;
 import com.example.collections_backend.utils.ConsumerFunctions;
@@ -40,12 +43,34 @@ public class UserService {
                 .surname(user.getSurname())
                 .image(user.getImage())
                 .backgroundImage(user.getBackgroundImage())
-                .countCollections(collectionRepository.countAllByUser(user))
-                .collections(collectionRepository.findTop3ByUserAndIsPrivateOrderByIdCollection(user, false))
-                .countFriendships(friendshipRepository
-                        .countAllByFollower(user)
+                .countCollections(collectionRepository.countAllByUserAndIsPrivate(user, false))
+                .collections(collectionRepository
+                        .findTop3ByUserAndIsPrivateOrderByIdCollection(user, false)
+                        .stream().map(c -> CollectionBasicInfo
+                                        .builder()
+                                        .name(c.getName())
+                                        .about(c.getAbout())
+                                        .info(c.getInformation())
+                                        .image(c.getImage())
+                                        .idCollection(c.getIdCollection())
+                                        .build()
+                                )
+                        .toList()
+                )
+                .countFriendships(friendshipRepository.countAllByFollower(user)
                         .orElseThrow(EntityNotFoundException::new))
-                .friendships(friendshipRepository.findTop4ByFollower(user))
+                .friendships(friendshipRepository
+                        .findTop4ByFollower(user)
+                        .stream()
+                        .map(Friendship::getUser)
+                        .map(f -> UserBasicInfoDto
+                                .builder()
+                                .nickname(f.getNickname())
+                                .image(f.getImage())
+                                .build()
+                        )
+                        .toList()
+                )
                 .isFollower(friendshipService.isFollowingExist(username))
                 .build();
     }
@@ -86,7 +111,9 @@ public class UserService {
         });
 
         if (request.getImage() != null) {
-            fileService.deleteImageFromStorage(user.getImage());
+            if (user.getImage() != null) {
+                fileService.deleteImageFromStorage(user.getImage());
+            }
             user.setImage(fileService.uploadFile(request.getImage()));
         }
 

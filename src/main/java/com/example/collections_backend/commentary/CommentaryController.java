@@ -1,0 +1,27 @@
+package com.example.collections_backend.commentary;
+
+import com.example.collections_backend.dto.CommentaryDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/")
+@RequiredArgsConstructor
+public class CommentaryController {
+    private final CommentaryService commentaryService;
+
+    @PostMapping(value = "auth/commentary/new")
+    public ResponseEntity<String> addCommentary(@RequestBody CommentaryDto request) {
+        commentaryService.newCommentary(request);
+        return ResponseEntity.ok("Success");
+    }
+
+    @GetMapping(value = "auth/commentary/{idItem}")
+    public ResponseEntity<List<CommentaryDto>> addCommentary(@PathVariable Long idItem) {
+
+        return ResponseEntity.ok(commentaryService.getAllCommentaryToPost(idItem));
+    }
+}

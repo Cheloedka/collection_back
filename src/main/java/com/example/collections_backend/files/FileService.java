@@ -1,6 +1,5 @@
 package com.example.collections_backend.files;
 
-import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.FileDeleteFailedException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
@@ -74,9 +73,6 @@ public class FileService {
             if (!file.delete()) {
                 throw new FileDeleteFailedException();
             }
-        }
-        else {
-            throw new EntityNotFoundException();
         }
     }
 
