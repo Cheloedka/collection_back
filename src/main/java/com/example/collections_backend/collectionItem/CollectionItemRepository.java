@@ -2,7 +2,6 @@ package com.example.collections_backend.collectionItem;
 
 import com.example.collections_backend.collections.CollectionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 import java.util.ArrayList;
 import java.util.List;

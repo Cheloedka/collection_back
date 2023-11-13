@@ -26,6 +26,9 @@ public class Commentary {
     private Long id;
     private String content;
 
+    @Column(columnDefinition = "boolean default false")
+    boolean isDeleted;
+
     @CreatedDate
     @LastModifiedDate
     private LocalDateTime creationDate;
@@ -44,9 +47,10 @@ public class Commentary {
     private Commentary answerToId;
 
     @Builder
-    public Commentary(String content, Commentary answerToId, CollectionItem answerToItem) {
+    public Commentary(String content, Commentary answerToId, CollectionItem answerToItem, boolean isDeleted) {
         this.content = content;
         this.answerToId = answerToId;
         this.answerToItem = answerToItem;
+        this.isDeleted = isDeleted;
     }
 }

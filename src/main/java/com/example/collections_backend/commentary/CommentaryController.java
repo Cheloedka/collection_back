@@ -21,7 +21,12 @@ public class CommentaryController {
 
     @GetMapping(value = "auth/commentary/{idItem}")
     public ResponseEntity<List<CommentaryDto>> addCommentary(@PathVariable Long idItem) {
-
         return ResponseEntity.ok(commentaryService.getAllCommentaryToPost(idItem));
+    }
+
+    @DeleteMapping(value = "auth/commentary/delete/{idCommentary}")
+    public ResponseEntity<String> deleteCommentary(@PathVariable Long idCommentary) {
+        commentaryService.deleteCommentary(idCommentary);
+        return ResponseEntity.ok("Success");
     }
 }

@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +33,19 @@ public class CommentaryService {
             );
         }
         commentaryRepo.save(commentary.build());
+    }
+
+    public void deleteCommentary(Long idCommentary) {
+        var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
+
+        if (commentaryRepo.existsByAnswerToId(commentary)) {
+            commentary.setContent(null);
+            commentary.setDeleted(true);
+            commentaryRepo.save(commentary);
+        }
+        else {
+            commentaryRepo.delete(commentary);
+        }
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {
@@ -64,6 +76,7 @@ public class CommentaryService {
                         .answers(
                                 commentaryStructureMaker(commentaryRepo.findAllByAnswerToId(c))
                         )
+                        .deleted(c.isDeleted())
                         .build()
                 )
                 .toList();

@@ -23,6 +23,7 @@ public class GetItemInfoDto {
     private boolean liked;
     private Long itemId;
     private Long likesCount;
+    private Long commentsCount;
 
     private boolean isPrivate;
 }

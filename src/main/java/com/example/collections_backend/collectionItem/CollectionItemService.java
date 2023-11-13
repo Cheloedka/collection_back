@@ -7,9 +7,11 @@ import com.example.collections_backend.collections.CollectionEntity;
 import com.example.collections_backend.collections.CollectionManagementService;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemRepository;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItemService;
+import com.example.collections_backend.commentary.CommentaryRepository;
 import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
+import com.example.collections_backend.user.UserManagementService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,28 @@ public class CollectionItemService {
     private final ImagesItemRepository imagesItemRepository;
     private final LikeService likeService;
     private final LikeRepository likeRepository;
+    private final CommentaryRepository commentaryRepository;
 
+
+
+    public List<GetItemInfoDto> getAllCollectionItems(Long idCollection) {
+        return collectionItemRepository
+                .findAllByCollectionEntity(
+                        collectionManagementService.findById(idCollection)
+                )
+                .stream().map(i -> GetItemInfoDto.builder()
+                        .name(i.getName())
+                        .about(i.getAbout())
+                        .information(i.getInformation())
+                        .images(imagesItemRepository.findAllByCollectionItem(i))
+                        .itemId(i.getId())
+                        .liked(likeService.isExistLike(i.getId()))
+                        .likesCount(likeRepository.countAllByCollectionItem(i))
+                        .commentsCount(commentaryRepository.countAllByAnswerToItem(i))
+                        .build()
+                )
+                .toList();
+    }
 
 
     private CollectionItem getItemByIdCollectionAndIdItem(Integer idItem, Long idCollection) {
@@ -124,7 +147,6 @@ public class CollectionItemService {
                     .itemImage(image)
                     .countId(item.getCountId())
                     .itemId(item.getId())
-                    .liked(likeService.isExistLike(item.getId()))
                     .build();
         }).toList();
     }

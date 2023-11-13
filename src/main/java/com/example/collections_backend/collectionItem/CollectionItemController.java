@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
@@ -20,6 +21,11 @@ public class CollectionItemController {
     @PostMapping(value = "auth/item/new", consumes = "multipart/form-data")
     public ResponseEntity<String> addItem(@ModelAttribute NewItemDto request) {
         return ResponseEntity.ok(collectionItemService.newItem(request));
+    }
+
+    @GetMapping(value = "item/{idCollection}/all")
+    public List<GetItemInfoDto> addItem(@PathVariable Long idCollection) {
+        return collectionItemService.getAllCollectionItems(idCollection);
     }
 
     @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")
