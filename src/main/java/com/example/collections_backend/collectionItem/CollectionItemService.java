@@ -35,12 +35,21 @@ public class CollectionItemService {
 
 
 
-    public List<GetItemInfoDto> getAllCollectionItems(Long idCollection) {
-        return collectionItemRepository
-                .findAllByCollectionEntity(
-                        collectionManagementService.findById(idCollection)
-                )
-                .stream().map(i -> GetItemInfoDto.builder()
+    public List<GetItemInfoDto> getAllCollectionItems(CollectionEntity collectionEntity) {
+        return listItemsToListDto(
+                collectionItemRepository.findAllByCollectionEntity(collectionEntity)
+        );
+    }
+
+
+    public List<GetItemInfoDto> getAllItemsByUsername(String username) {
+        return listItemsToListDto(
+            collectionItemRepository.findAllByCollectionEntity_User_Username(username)
+        );
+    }
+
+    private List<GetItemInfoDto> listItemsToListDto(List<CollectionItem> items) {
+        return items.stream().map(i -> GetItemInfoDto.builder()
                         .name(i.getName())
                         .about(i.getAbout())
                         .information(i.getInformation())
@@ -49,10 +58,14 @@ public class CollectionItemService {
                         .liked(likeService.isExistLike(i.getId()))
                         .likesCount(likeRepository.countAllByCollectionItem(i))
                         .commentsCount(commentaryRepository.countAllByAnswerToItem(i))
+                        .countId(i.getCountId())
+                        .infoName(i.getCollectionEntity().getName())
+                        .infoImage(i.getCollectionEntity().getImage())
                         .build()
                 )
                 .toList();
     }
+
 
 
     private CollectionItem getItemByIdCollectionAndIdItem(Integer idItem, Long idCollection) {

@@ -23,9 +23,9 @@ public class CollectionItemController {
         return ResponseEntity.ok(collectionItemService.newItem(request));
     }
 
-    @GetMapping(value = "item/{idCollection}/all")
-    public List<GetItemInfoDto> addItem(@PathVariable Long idCollection) {
-        return collectionItemService.getAllCollectionItems(idCollection);
+    @GetMapping(value = "/item/{username}/all")
+    public List<GetItemInfoDto> getAllItems(@PathVariable String username) {
+        return collectionItemService.getAllItemsByUsername(username);
     }
 
     @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")

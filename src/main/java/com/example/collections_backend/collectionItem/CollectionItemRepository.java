@@ -15,4 +15,6 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
     Optional<CollectionItem> findTopByCollectionEntityOrderByCountIdDesc(CollectionEntity collectionEntity);
     Optional<CollectionItem> findByCollectionEntityAndCountId(CollectionEntity collectionEntity, Integer countId);
 
+    List<CollectionItem> findAllByCollectionEntity_User_Username(String username);
+
 }

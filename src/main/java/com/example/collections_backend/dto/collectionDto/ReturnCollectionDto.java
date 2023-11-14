@@ -1,5 +1,6 @@
 package com.example.collections_backend.dto.collectionDto;
 
+import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.GetShortItemInfoDto;
 import lombok.*;
 
@@ -17,6 +18,6 @@ public class ReturnCollectionDto {
     private Long id;
     private String backgroundImage;
     private boolean collectionPrivate;
-    private List<GetShortItemInfoDto> items = new ArrayList<>();
+    private List<GetItemInfoDto> items = new ArrayList<>();
     private Long countItems;
 }

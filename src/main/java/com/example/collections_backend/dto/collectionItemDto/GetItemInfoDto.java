@@ -14,6 +14,9 @@ import java.util.List;
 @Builder
 public class GetItemInfoDto {
 
+    private String infoName;
+    private String infoImage;
+
     private String name;
     private String about;
     private String information;
@@ -22,6 +25,7 @@ public class GetItemInfoDto {
 
     private boolean liked;
     private Long itemId;
+    private Integer countId;
     private Long likesCount;
     private Long commentsCount;
 
