@@ -9,7 +9,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -26,12 +25,14 @@ public class Commentary {
     private Long id;
     private String content;
 
+    @CreatedDate
+    private LocalDateTime creationDate;
+
+    @LastModifiedDate
+    private LocalDateTime updatedDate;
+
     @Column(columnDefinition = "boolean default false")
     boolean isDeleted;
-
-    @CreatedDate
-    @LastModifiedDate
-    private LocalDateTime creationDate;
 
     @ManyToOne
     @JoinColumn(name = "author")
