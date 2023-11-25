@@ -1,7 +1,5 @@
 package com.example.collections_backend.commentary.like;
 
-
-import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.commentary.Commentary;
 import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
@@ -30,10 +28,13 @@ public class CommentaryLike {
     @JoinColumn(name = "commentary")
     private Commentary commentary;
 
+    @Enumerated(EnumType.STRING)
+    private LikeType likeType;
 
     @Builder
-    public CommentaryLike(Commentary commentary) {
+    public CommentaryLike(Commentary commentary, LikeType likeType) {
         this.commentary = commentary;
+        this.likeType = likeType;
     }
 
 }

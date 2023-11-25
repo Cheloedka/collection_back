@@ -1,6 +1,8 @@
 package com.example.collections_backend.commentary;
 
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
+import com.example.collections_backend.commentary.like.CommentaryLikeRepository;
+import com.example.collections_backend.commentary.like.CommentaryLikeService;
 import com.example.collections_backend.dto.CommentaryDto;
 import com.example.collections_backend.dto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
@@ -15,8 +17,10 @@ import java.util.List;
 public class CommentaryService {
     private final CommentaryRepository commentaryRepo;
     private final CollectionItemRepository collectionItemRepo;
+    private final CommentaryLikeRepository commentaryLikeRepo;
+    private final CommentaryLikeService commentaryLikeService;
 
-    public void newCommentary(CommentaryDto request) {
+    public Long newCommentary(CommentaryDto request) {
         var commentary = Commentary.builder()
                 .content(request.getContent())
                 .answerToItem(
@@ -32,20 +36,14 @@ public class CommentaryService {
                             .orElseThrow(() -> new BadRequestException("Something went wrong"))
             );
         }
-        commentaryRepo.save(commentary.build());
+
+        return commentaryRepo.save(commentary.build()).getId();
     }
 
     public void deleteCommentary(Long idCommentary) {
         var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
 
-        if (commentaryRepo.existsByAnswerToId(commentary)) {
-            commentary.setContent(null);
-            commentary.setDeleted(true);
-            commentaryRepo.save(commentary);
-        }
-        else {
-            commentaryRepo.delete(commentary);
-        }
+        commentaryRepo.delete(commentary);
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {
@@ -76,7 +74,9 @@ public class CommentaryService {
                         .answers(
                                 commentaryStructureMaker(commentaryRepo.findAllByAnswerToId(c))
                         )
-                        .deleted(c.isDeleted())
+                        .countLikes(commentaryLikeService.countLikes(c))
+                        .likeDto(commentaryLikeService.isExistLike(c))
+                        .answerToId(c.getAnswerToId().getId())
                         .build()
                 )
                 .toList();

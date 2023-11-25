@@ -14,7 +14,13 @@ public class CommentaryLikeController {
     @PostMapping("/auth/commentary/like/{id}")
     public ResponseEntity<String> Like(@PathVariable Long id) {
 
-        return ResponseEntity.ok(commentaryLikeService.newLike(id));
+        return ResponseEntity.ok(commentaryLikeService.newLike(id, false));
+    }
+
+    @PostMapping("/auth/commentary/dislike/{id}")
+    public ResponseEntity<String> Dislike(@PathVariable Long id) {
+
+        return ResponseEntity.ok(commentaryLikeService.newLike(id, true));
     }
 
     @DeleteMapping("/auth/commentary/like/delete/{id}")

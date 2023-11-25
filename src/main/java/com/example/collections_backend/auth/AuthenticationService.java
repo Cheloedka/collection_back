@@ -122,7 +122,7 @@ public class AuthenticationService {
     }
 
     private void activateAccountIfVerified(ConfirmationToken token) {
-        var user = userManagementService.getUserById(token.getUserId());
+        var user = token.getUser();
 
 
         if (token.getConfirmedTime().isAfter(token.getExpiredTime())){
@@ -135,7 +135,7 @@ public class AuthenticationService {
 
     private void changeEmailActionConfirmation(ConfirmationToken token) { //confirms action "change email"
         expiredToken(token);
-        var user = userManagementService.getUserById(token.getUserId());
+        var user = token.getUser();
 
         String newToken = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.CHANGE_EMAIL_LAST, token.getMessage());
 
@@ -150,7 +150,7 @@ public class AuthenticationService {
     //?
     private void changeEmailLastConfirmation(ConfirmationToken token) { //new email confirmation
         expiredToken(token);
-        var user = userManagementService.getUserById(token.getUserId());
+        var user = token.getUser();
 
         user.setEmail(token.getMessage());
         userRepository.save(user);
@@ -199,7 +199,7 @@ public class AuthenticationService {
 
     public void resetPasswordAction(ConfirmationToken token, String message) {
         expiredToken(token);
-        var user = userManagementService.getUserById(token.getUserId());
+        var user = token.getUser();
 
         user.setPassword(passwordEncoder.encode(message));
         userRepository.save(user);

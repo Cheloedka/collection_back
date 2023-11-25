@@ -22,6 +22,7 @@ public class CommentaryDto {
     private Long answerToItem;
     private Long answerToId;
     private List<CommentaryDto> answers;
-    boolean deleted;
-
+    private Integer countLikes;
+    private CommentaryLikeDto likeDto;
 }
+

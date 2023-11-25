@@ -1,5 +1,6 @@
 package com.example.collections_backend.email.token;
 
+import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,7 +23,12 @@ public class ConfirmationToken {
     private LocalDateTime confirmedTime;
     private String message;
 
-    private Long userId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
+
 
     @Column
     @Enumerated(EnumType.STRING)

@@ -1,6 +1,7 @@
 package com.example.collections_backend.commentary;
 
 import com.example.collections_backend.collectionItem.CollectionItem;
+import com.example.collections_backend.commentary.like.CommentaryLike;
 import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,6 +11,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 
 @Getter
@@ -31,9 +34,6 @@ public class Commentary {
     @LastModifiedDate
     private LocalDateTime updatedDate;
 
-    @Column(columnDefinition = "boolean default false")
-    boolean isDeleted;
-
     @ManyToOne
     @JoinColumn(name = "author")
     @CreatedBy
@@ -47,11 +47,16 @@ public class Commentary {
     @JoinColumn(name = "answer_to_commentary")
     private Commentary answerToId;
 
+    @OneToMany(mappedBy = "answerToId", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Commentary> answered;
+
+    @OneToMany(mappedBy = "commentary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<CommentaryLike> likes;
+
     @Builder
-    public Commentary(String content, Commentary answerToId, CollectionItem answerToItem, boolean isDeleted) {
+    public Commentary(String content, Commentary answerToId, CollectionItem answerToItem) {
         this.content = content;
         this.answerToId = answerToId;
         this.answerToItem = answerToItem;
-        this.isDeleted = isDeleted;
     }
 }

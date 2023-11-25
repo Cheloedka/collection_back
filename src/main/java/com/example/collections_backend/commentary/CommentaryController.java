@@ -14,9 +14,9 @@ public class CommentaryController {
     private final CommentaryService commentaryService;
 
     @PostMapping(value = "auth/commentary/new")
-    public ResponseEntity<String> addCommentary(@RequestBody CommentaryDto request) {
+    public Long addCommentary(@RequestBody CommentaryDto request) {
         commentaryService.newCommentary(request);
-        return ResponseEntity.ok("Success");
+        return commentaryService.newCommentary(request);
     }
 
     @GetMapping(value = "auth/commentary/{idItem}")
