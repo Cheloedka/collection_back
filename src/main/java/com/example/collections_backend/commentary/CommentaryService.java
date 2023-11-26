@@ -17,7 +17,6 @@ import java.util.List;
 public class CommentaryService {
     private final CommentaryRepository commentaryRepo;
     private final CollectionItemRepository collectionItemRepo;
-    private final CommentaryLikeRepository commentaryLikeRepo;
     private final CommentaryLikeService commentaryLikeService;
 
     public Long newCommentary(CommentaryDto request) {
@@ -44,6 +43,14 @@ public class CommentaryService {
         var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
 
         commentaryRepo.delete(commentary);
+    }
+
+    public void editCommentary(Long idCommentary, CommentaryDto request) {
+        var commentary =
+                commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
+        commentary.setContent(request.getContent());
+
+        commentaryRepo.save(commentary);
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {
@@ -76,7 +83,7 @@ public class CommentaryService {
                         )
                         .countLikes(commentaryLikeService.countLikes(c))
                         .likeDto(commentaryLikeService.isExistLike(c))
-                        .answerToId(c.getAnswerToId().getId())
+                        .answerToId(c.getAnswerToItem().getId())
                         .build()
                 )
                 .toList();

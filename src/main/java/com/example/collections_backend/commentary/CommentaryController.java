@@ -15,8 +15,13 @@ public class CommentaryController {
 
     @PostMapping(value = "auth/commentary/new")
     public Long addCommentary(@RequestBody CommentaryDto request) {
-        commentaryService.newCommentary(request);
         return commentaryService.newCommentary(request);
+    }
+
+    @PutMapping(value = "auth/commentary/edit/{idCommentary}")
+    public ResponseEntity<String> editCommentary(@PathVariable Long idCommentary, @RequestBody CommentaryDto request) {
+        commentaryService.editCommentary(idCommentary, request);
+        return ResponseEntity.ok("Success");
     }
 
     @GetMapping(value = "auth/commentary/{idItem}")
