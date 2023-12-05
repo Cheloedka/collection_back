@@ -33,6 +33,31 @@ public class UserService {
         return  userManagementService.getUserByUsername(username);
     }
 
+    public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
+
+        var user = getUserByUsername(username);
+
+        ConsumerFunctions.setIfNotNull(request.getName(), user::setName);
+        ConsumerFunctions.setIfNotNull(request.getSurname(), user::setSurname);
+        ConsumerFunctions.setIfNotNull(request.getNickname(), nick -> {
+            if (userRepository.existsUserByUsername(request.getNickname()))
+                throw new SomethingAlreadyExist("Username Already Exist");
+            else
+                user.setUsername(request.getNickname());
+        });
+
+        if (request.getImage() != null) {
+            if (user.getImage() != null) {
+                fileService.deleteImageFromStorage(user.getImage());
+            }
+            user.setImage(fileService.uploadFile(request.getImage()));
+        }
+
+        userRepository.save(user);
+
+        return "Changed";
+    }
+
     public UserPageDto getUserPageInfo(String username){
 
         var user = getUserByUsername(username);
@@ -43,9 +68,9 @@ public class UserService {
                 .surname(user.getSurname())
                 .image(user.getImage())
                 .backgroundImage(user.getBackgroundImage())
-                .countCollections(collectionRepository.countAllByUserAndIsPrivate(user, false))
+                .countCollections(collectionRepository.countAllByUserAndIsPrivateFalse(user))
                 .collections(collectionRepository
-                        .findTop3ByUserAndIsPrivateOrderByIdCollection(user, false)
+                        .findTop3ByUserAndIsPrivateFalseOrderByIdCollection(user)
                         .stream().map(c -> CollectionBasicInfo
                                         .builder()
                                         .name(c.getName())
@@ -97,29 +122,6 @@ public class UserService {
                 .build();
     }
 
-    public String editAccountSettings(String username, AccountSettingsEditDto request) throws IOException {
 
-        var user = getUserByUsername(username);
-
-        ConsumerFunctions.setIfNotNull(request.getName(), user::setName);
-        ConsumerFunctions.setIfNotNull(request.getSurname(), user::setSurname);
-        ConsumerFunctions.setIfNotNull(request.getNickname(), nick -> {
-            if (userRepository.existsUserByUsername(request.getNickname()))
-                throw new SomethingAlreadyExist("Username Already Exist");
-            else
-                user.setUsername(request.getNickname());
-        });
-
-        if (request.getImage() != null) {
-            if (user.getImage() != null) {
-                fileService.deleteImageFromStorage(user.getImage());
-            }
-            user.setImage(fileService.uploadFile(request.getImage()));
-        }
-
-        userRepository.save(user);
-
-        return "Changed";
-    }
 
 }

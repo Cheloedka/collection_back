@@ -14,20 +14,8 @@ import java.util.List;
 @RequestMapping("/api/")
 @RequiredArgsConstructor
 public class CollectionController {
+
     private final CollectionService collectionService;
-
-    @GetMapping("collections/{username}")
-    public List<ReturnCollectionDto> getCollectionsInfo(@PathVariable(value = "username") String username) {
-        return collectionService.getCollectionsInfo(username);
-    }
-
-    @GetMapping("collection/{username}/{idCollection}")
-    public ReturnCollectionDto getCollectionInfo(
-            @PathVariable(value = "idCollection") Long id,
-            @PathVariable(value = "username") String username
-    ) {
-        return collectionService.getCollectionInfo(id, username);
-    }
 
     @PostMapping(path ="auth/collection/new", consumes = "multipart/form-data")
     public ResponseEntity<String> addCollection(
@@ -41,6 +29,18 @@ public class CollectionController {
             @PathVariable(value = "idCollection") Long id
     ) throws IOException {
         return ResponseEntity.ok(collectionService.changeCollection(request, id));
+    }
+
+    @GetMapping("collections/{username}")
+    public List<ReturnCollectionDto> getCollectionsInfo(@PathVariable(value = "username") String username) {
+        return collectionService.getCollectionsInfo(username);
+    }
+
+    @GetMapping("collection/{username}/{idCollection}")
+    public ReturnCollectionDto getCollectionInfo( @PathVariable(value = "idCollection") Long id,
+            @PathVariable(value = "username") String username
+    ) {
+        return collectionService.getCollectionInfo(id, username);
     }
 
     @GetMapping("collection/{idCollection}/getRightInfo")

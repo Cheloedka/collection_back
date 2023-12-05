@@ -11,7 +11,6 @@ import com.example.collections_backend.commentary.CommentaryRepository;
 import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
-import com.example.collections_backend.user.UserManagementService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,20 +33,6 @@ public class CollectionItemService {
     private final CommentaryRepository commentaryRepository;
 
 
-
-    public List<GetItemInfoDto> getAllCollectionItems(CollectionEntity collectionEntity) {
-        return listItemsToListDto(
-                collectionItemRepository.findAllByCollectionEntity(collectionEntity)
-        );
-    }
-
-
-    public List<GetItemInfoDto> getAllItemsByUsername(String username) {
-        return listItemsToListDto(
-            collectionItemRepository.findAllByCollectionEntity_User_Username(username)
-        );
-    }
-
     private List<GetItemInfoDto> listItemsToListDto(List<CollectionItem> items) {
         return items.stream().map(i -> GetItemInfoDto.builder()
                         .name(i.getName())
@@ -61,12 +46,11 @@ public class CollectionItemService {
                         .countId(i.getCountId())
                         .infoName(i.getCollectionEntity().getName())
                         .infoImage(i.getCollectionEntity().getImage())
+                        .creationTime(i.getCreationTime())
                         .build()
                 )
                 .toList();
     }
-
-
 
     private CollectionItem getItemByIdCollectionAndIdItem(Integer idItem, Long idCollection) {
         return collectionItemRepository
@@ -86,28 +70,6 @@ public class CollectionItemService {
         deleteAllImagesFromStorageByItem(item);
 
         collectionItemRepository.delete(item);
-    }
-
-    public String newItem(NewItemDto request) {
-
-        var collectionEntity = collectionManagementService.findById(request.getIdCollection());
-        var lastItem = collectionItemRepository.findTopByCollectionEntityOrderByCountIdDesc(collectionEntity);
-
-        var item = CollectionItem.builder()
-                .name(request.getName())
-                .countId(lastItem.map(collectionItem -> collectionItem.getCountId() + 1).orElse(1))
-                .about(request.getAbout())
-                .information(request.getInformation())
-                .collectionEntity(collectionEntity)
-                .build();
-
-        collectionItemRepository.save(item);
-
-        if (request.getImages() != null) {
-            imagesItemService.saveImages(fileService.uploadItemImages(request.getImages()), item);
-        }
-
-        return "Success";
     }
 
     public void editItem(EditItemDto request) {
@@ -142,26 +104,38 @@ public class CollectionItemService {
         collectionItemRepository.save(item);
     }
 
+    public String newItem(NewItemDto request) {
 
-    public List<GetShortItemInfoDto> get5topItems(CollectionEntity collectionEntity) {
-        List<CollectionItem> items = collectionItemRepository.findTop5ByCollectionEntity(collectionEntity);
+        var collectionEntity = collectionManagementService.findById(request.getIdCollection());
+        var lastItem = collectionItemRepository.findTopByCollectionEntityOrderByCountIdDesc(collectionEntity);
 
-        return items.stream().map(item -> {
+        var item = CollectionItem.builder()
+                .name(request.getName())
+                .countId(lastItem.map(collectionItem -> collectionItem.getCountId() + 1).orElse(1))
+                .about(request.getAbout())
+                .information(request.getInformation())
+                .collectionEntity(collectionEntity)
+                .build();
 
-            String image = "";
-            var optional = imagesItemRepository.findTop1ByCollectionItem(item);
-            if (optional.isPresent()) {
-                image = optional.get().getName();
-            }
+        collectionItemRepository.save(item);
 
-            return GetShortItemInfoDto.builder()
-                    .itemName(item.getName())
-                    .itemAbout(item.getAbout())
-                    .itemImage(image)
-                    .countId(item.getCountId())
-                    .itemId(item.getId())
-                    .build();
-        }).toList();
+        if (request.getImages() != null) {
+            imagesItemService.saveImages(fileService.uploadItemImages(request.getImages()), item);
+        }
+
+        return "Success";
+    }
+
+    public List<GetItemInfoDto> getAllCollectionItems(CollectionEntity collectionEntity) {
+        return listItemsToListDto(
+                collectionItemRepository.findAllByCollectionEntity(collectionEntity)
+        );
+    }
+
+    public List<GetItemInfoDto> getAllItemsByUsername(String username) {
+        return listItemsToListDto(
+                collectionItemRepository.findAllByCollectionEntity_User_Username(username)
+        );
     }
 
     public GetItemInfoDto getItemInfo(Integer idItem, Long idCollection, String username) {

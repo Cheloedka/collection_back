@@ -14,6 +14,10 @@ public class LikeService {
     private final UserManagementService userManagementService;
     private final LikeRepository likeRepository;
 
+    private CollectionItem getItem(Long id) {
+        return collectionItemRepository.findById(id).orElseThrow(() -> new SomethingNotFoundException("Item not found"));
+    }
+
     public String newLike(Long id) {
         var user = userManagementService.getCurrentUser();
         var like = LikeItem.builder()
@@ -40,10 +44,5 @@ public class LikeService {
         return likeRepository.existsByCollectionItemAndUser(getItem(id), userManagementService.getCurrentUser());
 
     }
-
-    private CollectionItem getItem(Long id) {
-        return collectionItemRepository.findById(id).orElseThrow(() -> new SomethingNotFoundException("Item not found"));
-    }
-
 
 }

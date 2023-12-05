@@ -10,9 +10,13 @@ import java.util.Optional;
 public interface CollectionItemRepository extends JpaRepository<CollectionItem, Long> {
 
     List<CollectionItem> findAllByCollectionEntity(CollectionEntity collectionEntity);
+
     ArrayList<CollectionItem> findTop5ByCollectionEntity(CollectionEntity collectionEntity);
+
     Long countAllByCollectionEntity(CollectionEntity collectionEntity);
+
     Optional<CollectionItem> findTopByCollectionEntityOrderByCountIdDesc(CollectionEntity collectionEntity);
+
     Optional<CollectionItem> findByCollectionEntityAndCountId(CollectionEntity collectionEntity, Integer countId);
 
     List<CollectionItem> findAllByCollectionEntity_User_Username(String username);

@@ -1,7 +1,6 @@
 package com.example.collections_backend.commentary;
 
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
-import com.example.collections_backend.commentary.like.CommentaryLikeRepository;
 import com.example.collections_backend.commentary.like.CommentaryLikeService;
 import com.example.collections_backend.dto.CommentaryDto;
 import com.example.collections_backend.dto.UserBasicInfoDto;
@@ -18,6 +17,20 @@ public class CommentaryService {
     private final CommentaryRepository commentaryRepo;
     private final CollectionItemRepository collectionItemRepo;
     private final CommentaryLikeService commentaryLikeService;
+
+    public void deleteCommentary(Long idCommentary) {
+        var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
+
+        commentaryRepo.delete(commentary);
+    }
+
+    public void editCommentary(Long idCommentary, CommentaryDto request) {
+        var commentary =
+                commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
+        commentary.setContent(request.getContent());
+
+        commentaryRepo.save(commentary);
+    }
 
     public Long newCommentary(CommentaryDto request) {
         var commentary = Commentary.builder()
@@ -37,20 +50,6 @@ public class CommentaryService {
         }
 
         return commentaryRepo.save(commentary.build()).getId();
-    }
-
-    public void deleteCommentary(Long idCommentary) {
-        var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
-
-        commentaryRepo.delete(commentary);
-    }
-
-    public void editCommentary(Long idCommentary, CommentaryDto request) {
-        var commentary =
-                commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
-        commentary.setContent(request.getContent());
-
-        commentaryRepo.save(commentary);
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {

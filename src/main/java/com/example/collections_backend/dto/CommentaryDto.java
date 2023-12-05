@@ -15,7 +15,6 @@ public class CommentaryDto {
     private Long id;
     private String content;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy hh:mm:ss")
     private LocalDateTime creationDate;
 
     private UserBasicInfoDto author;

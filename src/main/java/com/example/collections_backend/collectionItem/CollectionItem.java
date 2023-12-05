@@ -6,7 +6,10 @@ import com.example.collections_backend.collections.CollectionEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,6 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "_collection_item")
+@EntityListeners(AuditingEntityListener.class)
 public class CollectionItem {
 
     @Id
@@ -27,6 +31,9 @@ public class CollectionItem {
     private String name;
     private String about;
     private String information;
+
+    @CreatedDate
+    private LocalDateTime creationTime;
 
     @OneToMany(mappedBy = "collectionItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore

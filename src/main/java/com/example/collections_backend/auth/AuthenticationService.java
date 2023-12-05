@@ -15,12 +15,20 @@ import com.example.collections_backend.exception_handling.exceptions.PasswordDoe
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
 import com.example.collections_backend.response.AuthenticationResponse;
 import com.example.collections_backend.user.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 
@@ -37,82 +45,10 @@ public class AuthenticationService {
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final UserManagementService userManagementService;
 
-    //login
-    public AuthenticationResponse authenticate(AuthenticationDto request) {
-        //check without my code is authorized
-        var user = userRepository.findUserByEmail(request.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Email not found"));
-
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                ) //throws BadCredentialsException
-        );
-
-        String jwtToken = jwtService.generateToken(user);
-        return new AuthenticationResponse(jwtToken);
-    }
-
     private void existsByEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
             throw new UserNotFoundException("Email is already exist");
         }
-    }
-
-    public String register(RegisterDto request) {
-
-        existsByEmail(request.getEmail());
-
-        var user = User.builder()
-                .username(request.getUsername())
-                .name(request.getName())
-                .surname(request.getSurname())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
-                .isEnabled(false)
-                .build();
-        userRepository.save(user);
-
-
-        sendVerificationMail(user);
-
-        return "Verification mail is sent on your email";
-    }
-
-
-
-    public String confirmation(ConfirmationDto request) {
-
-        var token = confirmationTokenRepository
-                .findByConfirmationToken(request.getToken())
-                .orElseThrow(() -> new ConformationTokenExpiredException("Confirmation token not exist"));
-
-        token.setConfirmedTime(LocalDateTime.now());
-        confirmationTokenRepository.save(token);
-
-        var type = token.getConfirmationType();
-        String message = "";
-        switch (type) {
-            case REGISTRATION -> {
-                activateAccountIfVerified(token);
-                message = "Account is activated";
-            }
-            case CHANGE_EMAIL -> {
-                changeEmailActionConfirmation(token);
-                message = "Verification is sent on new email address";
-            }
-            case CHANGE_EMAIL_LAST -> {
-                changeEmailLastConfirmation(token);
-                message = "Email changed successfully";
-            }
-            case PASSWORD_RESET -> {
-                resetPasswordAction(token, request.getInfo());
-                message = "Password changed successfully";
-            }
-        }
-        return message;
     }
 
     private void expiredToken(ConfirmationToken token) {
@@ -147,8 +83,7 @@ public class AuthenticationService {
         );
     }
 
-    //?
-    private void changeEmailLastConfirmation(ConfirmationToken token) { //new email confirmation
+    private void changeEmailLastConfirmation(ConfirmationToken token) {
         expiredToken(token);
         var user = token.getUser();
 
@@ -156,18 +91,60 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
+    public String register(RegisterDto request) {
 
-    public void sendVerificationMail( User user ) {
+        existsByEmail(request.getEmail());
 
-        String token = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.REGISTRATION);
-        emailSenderService.sendVerificationMail(
-                user.getUsername(),
-                user.getName(),
-                token
-        );
+        var user = User.builder()
+                .username(request.getUsername())
+                .name(request.getName())
+                .surname(request.getSurname())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(Role.USER)
+                .isEnabled(false)
+                .build();
+        userRepository.save(user);
+
+
+        sendVerificationMail(user);
+
+        return "Verification mail is sent on your email";
     }
 
-    public String changeEmail(String email) { //sends email list on old email to confirm action
+    public String confirmation(ConfirmationDto request) {
+
+        var token = confirmationTokenRepository
+                .findByConfirmationToken(request.getToken())
+                .orElseThrow(() -> new ConformationTokenExpiredException("Confirmation token not exist"));
+
+        token.setConfirmedTime(LocalDateTime.now());
+        confirmationTokenRepository.save(token);
+
+        var type = token.getConfirmationType();
+        String message = "";
+        switch (type) {
+            case REGISTRATION -> {
+                activateAccountIfVerified(token);
+                message = "Account is activated";
+            }
+            case CHANGE_EMAIL -> {
+                changeEmailActionConfirmation(token);
+                message = "Verification is sent on new email address";
+            }
+            case CHANGE_EMAIL_LAST -> {
+                changeEmailLastConfirmation(token);
+                message = "Email changed successfully";
+            }
+            case PASSWORD_RESET -> {
+                resetPasswordAction(token, request.getInfo());
+                message = "Password changed successfully";
+            }
+        }
+        return message;
+    }
+
+    public String changeEmail(String email) {
 
         existsByEmail(email);
         var user = userManagementService.getCurrentUser();
@@ -197,15 +174,6 @@ public class AuthenticationService {
         return "Verification is sent on email address";
     }
 
-    public void resetPasswordAction(ConfirmationToken token, String message) {
-        expiredToken(token);
-        var user = token.getUser();
-
-        user.setPassword(passwordEncoder.encode(message));
-        userRepository.save(user);
-    }
-
-
     public String changePassword(SecuritySettingsEditDto dto) {
         var user = userManagementService.getCurrentUser();
         if ( !passwordEncoder.matches(dto.getOldPassword(), user.getPassword()) ) {
@@ -218,4 +186,64 @@ public class AuthenticationService {
         return "Success";
     }
 
+    public AuthenticationResponse authenticate(AuthenticationDto request) {
+        //check without my code is authorized
+        var user = userRepository.findUserByEmail(request.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Email not found"));
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getEmail(),
+                        request.getPassword()
+                ) //throws BadCredentialsException
+        );
+
+        return AuthenticationResponse.builder()
+                .accessToken(jwtService.generateToken(user))
+                .refreshToken(jwtService.generateRefreshToken(user))
+                .build();
+    }
+
+    public void resetPasswordAction(ConfirmationToken token, String message) {
+        expiredToken(token);
+        var user = token.getUser();
+
+        user.setPassword(passwordEncoder.encode(message));
+        userRepository.save(user);
+    }
+
+    public void sendVerificationMail( User user ) {
+
+        String token = confirmationTokenService.createConformationToken(user.getIdUser(), ConfirmationType.REGISTRATION);
+        emailSenderService.sendVerificationMail(
+                user.getUsername(),
+                user.getName(),
+                token
+        );
+    }
+
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+        final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        final String refreshToken;
+        final String email;
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return;
+        }
+        refreshToken = authHeader.substring(7); // 7 - because String without "Bearer "
+        email = jwtService.extractUsername(refreshToken);
+        if (email != null) {
+            var user = this.userRepository.findUserByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("User not Found"));
+            if (jwtService.isTokenValid(refreshToken, user)) {
+                var accessToken = jwtService.generateToken(user);
+                var authResponse = AuthenticationResponse.builder()
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
+                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+            }
+        }
+    }
 }

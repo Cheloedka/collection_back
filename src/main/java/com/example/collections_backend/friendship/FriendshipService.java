@@ -18,6 +18,13 @@ public class FriendshipService {
     private final FriendshipRepository friendshipRepository;
     private final UserManagementService userManagementService;
 
+    public boolean isFollowingExist(String username) {
+
+        return friendshipRepository.existsFriendshipByFollowerAndUser(
+                userManagementService.getCurrentUser(),
+                userManagementService.getUserByUsername(username)
+        );
+    }
 
     public String newFollowing(String username) {
         var follower = userManagementService.getCurrentUser();
@@ -35,14 +42,6 @@ public class FriendshipService {
 
         return "Success";
 
-    }
-
-    public boolean isFollowingExist(String username) {
-
-        return friendshipRepository.existsFriendshipByFollowerAndUser(
-                userManagementService.getCurrentUser(),
-                userManagementService.getUserByUsername(username)
-        );
     }
 
     public String deleteFollowing(String username) {
@@ -96,7 +95,4 @@ public class FriendshipService {
                 )
                 .toList();
     }
-
-
-
 }

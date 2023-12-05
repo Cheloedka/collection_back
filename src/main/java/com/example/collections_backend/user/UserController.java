@@ -17,28 +17,6 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    @GetMapping("/auth/navbar")
-    public UserNavInfoDto getUserInfoNavbar() {
-
-        return userService.getUserNavInfo();
-
-    }
-    @GetMapping("/user/{username}")
-    public UserPageDto getUserPageInfo(
-            @PathVariable(value = "username") String username
-    ) {
-
-        return userService.getUserPageInfo(username);
-    }
-
-    @GetMapping("/auth/user/{username}/settings")
-    public UserSettingsDto getUserSettingsInfo(
-            @PathVariable(value = "username") String username
-    ) {
-
-        return userService.getUserSettingsInfo(username);
-    }
-
     @PutMapping(path ="/auth/user/{username}/edit1", consumes = "multipart/form-data")
     public ResponseEntity<String> editAccountSettings(
             @PathVariable String username,
@@ -63,5 +41,30 @@ public class UserController {
 
         return ResponseEntity.ok(authenticationService.changePassword(request));
     }
+
+    @GetMapping("/auth/navbar")
+    public UserNavInfoDto getUserInfoNavbar() {
+
+        return userService.getUserNavInfo();
+
+    }
+
+    @GetMapping("/user/{username}")
+    public UserPageDto getUserPageInfo(
+            @PathVariable(value = "username") String username
+    ) {
+
+        return userService.getUserPageInfo(username);
+    }
+
+    @GetMapping("/auth/user/{username}/settings")
+    public UserSettingsDto getUserSettingsInfo(
+            @PathVariable(value = "username") String username
+    ) {
+
+        return userService.getUserSettingsInfo(username);
+    }
+
+
 
 }

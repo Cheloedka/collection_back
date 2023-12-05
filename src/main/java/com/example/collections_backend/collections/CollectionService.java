@@ -29,31 +29,6 @@ public class CollectionService {
     private final CollectionManagementService collectionManagementService;
     private final FileService fileService;
 
-    public List<ReturnCollectionDto> getCollectionsInfo(String username) {
-
-        var user = userManagementService.getUserByUsername(username);
-        List<CollectionEntity> collections = new ArrayList<>();
-
-        if (userManagementService.getUserByUsername(username).equals(userManagementService.getCurrentUser())) {
-            collections.addAll(collectionRepository.findAllByUser(user));
-        }
-        else {
-            collections.addAll(collectionRepository.findAllByUserAndIsPrivate(user, false));
-        }
-        return collections.stream()
-                .map(el -> ReturnCollectionDto
-                        .builder()
-                        .name(el.getName())
-                        .about(el.getAbout())
-                        .image(el.getImage())
-                        .id(el.getIdCollection())
-                        .countItems(collectionItemRepository.countAllByCollectionEntity(el))
-                        .collectionPrivate(el.isPrivate())
-                        .build()
-                )
-                .collect(Collectors.toList());
-    }
-
     public void deleteCollection(Long id) {
         var collection = collectionManagementService.findById(id);
         if (!collection.getImage().equals("")) {
@@ -75,37 +50,6 @@ public class CollectionService {
     public Boolean isUserOwner(Long id) {
         return collectionManagementService.findById(id).getUser().getName()
                 .equals(userManagementService.getCurrentUser().getName());
-    }
-
-    public RightInfoInCollectionAndItemPageDto getRightInfo(Long id) {
-        var collection = collectionManagementService.findById(id);
-
-        return RightInfoInCollectionAndItemPageDto.builder()
-                .nameCollection(collection.getName())
-                .aboutCollection(collection.getAbout())
-                .imageCollection(collection.getImage())
-                .firstName(collection.getUser().getName())
-                .surname(collection.getUser().getSurname())
-                .userImage(collection.getUser().getImage())
-                .build();
-    }
-
-    public ReturnCollectionDto getCollectionInfo(Long id, String username){
-
-        var collection = collectionRepository
-                .findByUserAndIdCollection(userManagementService.getUserByUsername(username), id)
-                .orElseThrow(EntityNotFoundException::new);
-
-        return ReturnCollectionDto.builder()
-                .name(collection.getName())
-                .about(collection.getAbout())
-                .information(collection.getInformation())
-                .image(collection.getImage())
-                .backgroundImage(collection.getBackgroundImage())
-                .collectionPrivate(collection.isPrivate())
-                .items(collectionItemService.getAllCollectionItems(collection))
-                .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
-                .build();
     }
 
     public String newCollection(NewAndChangeCollectionDto request) throws IOException {
@@ -176,5 +120,61 @@ public class CollectionService {
             return fileService.uploadFile(image);
         }
         return "";
+    }
+
+    public List<ReturnCollectionDto> getCollectionsInfo(String username) {
+
+        var user = userManagementService.getUserByUsername(username);
+        List<CollectionEntity> collections = new ArrayList<>();
+
+        if (userManagementService.getUserByUsername(username).equals(userManagementService.getCurrentUser())) {
+            collections.addAll(collectionRepository.findAllByUser(user));
+        }
+        else {
+            collections.addAll(collectionRepository.findAllByUserAndIsPrivateFalse(user));
+        }
+        return collections.stream()
+                .map(el -> ReturnCollectionDto
+                        .builder()
+                        .name(el.getName())
+                        .about(el.getAbout())
+                        .image(el.getImage())
+                        .id(el.getIdCollection())
+                        .countItems(collectionItemRepository.countAllByCollectionEntity(el))
+                        .collectionPrivate(el.isPrivate())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
+
+    public RightInfoInCollectionAndItemPageDto getRightInfo(Long id) {
+        var collection = collectionManagementService.findById(id);
+
+        return RightInfoInCollectionAndItemPageDto.builder()
+                .nameCollection(collection.getName())
+                .aboutCollection(collection.getAbout())
+                .imageCollection(collection.getImage())
+                .firstName(collection.getUser().getName())
+                .surname(collection.getUser().getSurname())
+                .userImage(collection.getUser().getImage())
+                .build();
+    }
+
+    public ReturnCollectionDto getCollectionInfo(Long id, String username){
+
+        var collection = collectionRepository
+                .findByUserAndIdCollection(userManagementService.getUserByUsername(username), id)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return ReturnCollectionDto.builder()
+                .name(collection.getName())
+                .about(collection.getAbout())
+                .information(collection.getInformation())
+                .image(collection.getImage())
+                .backgroundImage(collection.getBackgroundImage())
+                .collectionPrivate(collection.isPrivate())
+                .items(collectionItemService.getAllCollectionItems(collection))
+                .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
+                .build();
     }
 }

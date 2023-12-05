@@ -20,19 +20,20 @@ public class FriendshipController {
         return ResponseEntity.ok(friendshipService.newFollowing(username));
     }
 
-    @DeleteMapping("/auth/friendships/delete/{username}")
-    public ResponseEntity<String> deleteFollowing(@PathVariable String username) {
-
-        return ResponseEntity.ok(friendshipService.deleteFollowing(username));
-    }
-
     @GetMapping("/following/{username}")
     public List<UserBasicInfoDto> getFollowing(@PathVariable String username) {
-     return friendshipService.getFollowing(username);
+        return friendshipService.getFollowing(username);
     }
 
     @GetMapping("/followers/{username}")
     public List<UserBasicInfoDto> getFollowers(@PathVariable String username) {
         return friendshipService.getFollowers(username);
     }
+
+    @DeleteMapping("/auth/friendships/delete/{username}")
+    public ResponseEntity<String> deleteFollowing(@PathVariable String username) {
+
+        return ResponseEntity.ok(friendshipService.deleteFollowing(username));
+    }
+
 }

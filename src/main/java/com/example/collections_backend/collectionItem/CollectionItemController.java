@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,9 +28,7 @@ public class CollectionItemController {
     }
 
     @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")
-    public GetSetItemForEditorDto getItemForEditor(@PathVariable Long idCollection,
-                                                   @PathVariable Integer idItem
-                                                ) {
+    public GetSetItemForEditorDto getItemForEditor(@PathVariable Long idCollection, @PathVariable Integer idItem) {
         return collectionItemService.getItemForEditor(idItem, idCollection);
     }
 
@@ -39,7 +36,7 @@ public class CollectionItemController {
     public GetItemInfoDto getItem(@PathVariable Long idCollection,
                                   @PathVariable Integer idItem,
                                   @PathVariable String username
-                                  ) {
+    ) {
         return collectionItemService.getItemInfo(idItem, idCollection, username);
     }
 
@@ -52,7 +49,9 @@ public class CollectionItemController {
 
     @DeleteMapping("auth/item/delete/{idItem}")
     public ResponseEntity<String> deleteItem (@PathVariable Long idItem) {
+
         collectionItemService.deleteItem(idItem);
+
         return ResponseEntity.ok("Success");
     }
 }

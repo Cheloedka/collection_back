@@ -16,6 +16,7 @@ public class UserManagementService {
         return userRepository.findUserByEmail( SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new UserNotFoundException("User is not found"));
     }
+
     public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username).orElseThrow(EntityNotFoundException::new);
     }

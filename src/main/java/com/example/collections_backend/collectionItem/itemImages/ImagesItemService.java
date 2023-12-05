@@ -2,7 +2,6 @@ package com.example.collections_backend.collectionItem.itemImages;
 
 import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
-import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,4 +32,5 @@ public class ImagesItemService {
             imagesItemRepository.delete(img);
         });
     }
+
 }

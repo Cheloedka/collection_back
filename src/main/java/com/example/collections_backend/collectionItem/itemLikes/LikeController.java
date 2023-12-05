@@ -1,6 +1,5 @@
 package com.example.collections_backend.collectionItem.itemLikes;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
