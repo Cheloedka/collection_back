@@ -1,6 +1,6 @@
 package com.example.collections_backend.friendship;
 
-import com.example.collections_backend.dto.UserBasicInfoDto;
+import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
 import com.example.collections_backend.user.User;
@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

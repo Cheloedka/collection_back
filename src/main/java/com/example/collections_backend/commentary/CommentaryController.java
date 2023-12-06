@@ -1,6 +1,6 @@
 package com.example.collections_backend.commentary;
 
-import com.example.collections_backend.dto.CommentaryDto;
+import com.example.collections_backend.dto.commentaryDto.CommentaryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

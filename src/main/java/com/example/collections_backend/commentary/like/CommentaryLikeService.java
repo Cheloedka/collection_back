@@ -2,7 +2,7 @@ package com.example.collections_backend.commentary.like;
 
 import com.example.collections_backend.commentary.Commentary;
 import com.example.collections_backend.commentary.CommentaryRepository;
-import com.example.collections_backend.dto.CommentaryLikeDto;
+import com.example.collections_backend.dto.commentaryDto.CommentaryLikeDto;
 import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;

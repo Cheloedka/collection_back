@@ -1,4 +1,4 @@
-package com.example.collections_backend.dto;
+package com.example.collections_backend.dto.commentaryDto;
 
 import com.example.collections_backend.commentary.like.LikeType;
 import lombok.Builder;

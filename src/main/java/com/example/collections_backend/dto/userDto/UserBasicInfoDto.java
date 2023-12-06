@@ -1,4 +1,4 @@
-package com.example.collections_backend.dto;
+package com.example.collections_backend.dto.userDto;
 
 import lombok.Builder;
 import lombok.Getter;

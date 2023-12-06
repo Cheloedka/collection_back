@@ -2,7 +2,7 @@ package com.example.collections_backend.user;
 
 import com.example.collections_backend.collections.CollectionRepository;
 import com.example.collections_backend.dto.CollectionBasicInfo;
-import com.example.collections_backend.dto.UserBasicInfoDto;
+import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.dto.userDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;

@@ -1,6 +1,6 @@
-package com.example.collections_backend.dto;
+package com.example.collections_backend.dto.commentaryDto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

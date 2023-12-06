@@ -1,6 +1,6 @@
 package com.example.collections_backend.friendship;
 
-import com.example.collections_backend.dto.UserBasicInfoDto;
+import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
