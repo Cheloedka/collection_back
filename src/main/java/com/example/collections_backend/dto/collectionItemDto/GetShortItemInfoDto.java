@@ -11,7 +11,5 @@ public class GetShortItemInfoDto {
     private String itemName;
     private String itemAbout;
     private String itemImage;
-    private Long itemId;
-    private boolean liked;
     private Integer countId;
 }

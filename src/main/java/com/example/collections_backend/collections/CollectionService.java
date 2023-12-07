@@ -173,7 +173,7 @@ public class CollectionService {
                 .image(collection.getImage())
                 .backgroundImage(collection.getBackgroundImage())
                 .collectionPrivate(collection.isPrivate())
-                .items(collectionItemService.getAllCollectionItems(collection))
+                .items(collectionItemService.getTop5CollectionItems(collection))
                 .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
                 .build();
     }

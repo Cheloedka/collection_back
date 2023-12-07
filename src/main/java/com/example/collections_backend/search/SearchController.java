@@ -23,8 +23,7 @@ public class SearchController {
     }
 
     @GetMapping("/by_type/{type}/{request}")
-    public List<SearchItemDto>
-    findByType(@PathVariable String request,
+    public List<SearchItemDto> findByType(@PathVariable String request,
                @PathVariable String type,
                @RequestParam(defaultValue = "0", required = false) int page,
                @RequestParam(defaultValue = DEFAULT_PAGE_SIZE, required = false) int pageSize

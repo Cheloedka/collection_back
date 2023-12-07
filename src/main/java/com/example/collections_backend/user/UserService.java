@@ -85,7 +85,7 @@ public class UserService {
                 .countFriendships(friendshipRepository.countAllByFollower(user)
                         .orElseThrow(EntityNotFoundException::new))
                 .friendships(friendshipRepository
-                        .findTop4ByFollower(user)
+                        .findTop5ByFollower(user)
                         .stream()
                         .map(Friendship::getUser)
                         .map(f -> UserBasicInfoDto

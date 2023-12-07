@@ -4,6 +4,7 @@ import com.example.collections_backend.dto.collectionItemDto.EditItemDto;
 import com.example.collections_backend.dto.collectionItemDto.GetSetItemForEditorDto;
 import com.example.collections_backend.dto.collectionItemDto.GetItemInfoDto;
 import com.example.collections_backend.dto.collectionItemDto.NewItemDto;
+import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,9 +23,18 @@ public class CollectionItemController {
         return ResponseEntity.ok(collectionItemService.newItem(request));
     }
 
-    @GetMapping(value = "/item/{username}/all")
-    public List<GetItemInfoDto> getAllItems(@PathVariable String username) {
-        return collectionItemService.getAllItemsByUsername(username);
+    @GetMapping(value = "item/{type}/{info}")
+    public List<GetItemInfoDto> getAllItemsByType(@PathVariable String info,
+                                                  @PathVariable String type,
+                                                  @RequestParam(defaultValue = "0", required = false) int page,
+                                                  @RequestParam(defaultValue = "4", required = false) int pageSize
+    ) {
+        if (type.equals("user"))
+            return collectionItemService.getAllItemsByUsername(info, page, pageSize);
+        if (type.equals("collection"))
+            return collectionItemService.getAllCollectionItems(Long.valueOf(info), page, pageSize);
+
+        throw new BadRequestException("There is not such search type as \"" + type + "\" ");
     }
 
     @GetMapping("auth/itemForEditor/{idCollection}/{idItem}")

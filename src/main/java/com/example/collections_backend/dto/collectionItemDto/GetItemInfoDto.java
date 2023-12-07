@@ -25,8 +25,11 @@ public class GetItemInfoDto {
     private List<ImagesItem> images = new ArrayList<>();
 
     private boolean liked;
+
     private Long itemId;
     private Integer countId;
+    private Long collectionId;
+
     private Long likesCount;
     private Long commentsCount;
 

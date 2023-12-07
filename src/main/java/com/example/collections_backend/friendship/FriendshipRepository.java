@@ -15,7 +15,7 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     Optional<Long> countAllByFollower(User user);
 
-    List<Friendship> findTop4ByFollower(User user);
+    List<Friendship> findTop5ByFollower(User user);
 
     List<Friendship> findAllByFollower(User user); //get all following
 

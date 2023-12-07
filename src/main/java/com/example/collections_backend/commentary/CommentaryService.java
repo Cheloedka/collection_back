@@ -3,10 +3,15 @@ package com.example.collections_backend.commentary;
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
 import com.example.collections_backend.commentary.like.CommentaryLikeService;
 import com.example.collections_backend.dto.commentaryDto.CommentaryDto;
+import com.example.collections_backend.dto.commentaryDto.CommentaryPageDto;
+import com.example.collections_backend.dto.searchDto.SearchItemDto;
+import com.example.collections_backend.dto.searchDto.SearchUserCollectionDto;
 import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -53,11 +58,22 @@ public class CommentaryService {
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {
-        var item = collectionItemRepo.findById(idItem).orElseThrow(() -> new BadRequestException("Something went wrong"));
-        List<Commentary> commentary = commentaryRepo.findAllByAnswerToItemAndAnswerToIdNull(item);
 
-        return commentaryStructureMaker(commentary);
+        var item =
+                collectionItemRepo
+                        .findById(idItem)
+                        .orElseThrow(() -> new BadRequestException("Something went wrong"));
+        var list =
+                commentaryRepo.findAllByAnswerToItemAndAnswerToIdNull(item);
+
+        return commentaryStructureMaker(list);
     }
+
+    /*public CommentaryPageDto getFirstCommentary(Long idItem) {
+        return CommentaryPageDto.builder()
+                .firstCommentary()
+                .build();
+    }*/
 
     private List<CommentaryDto> commentaryStructureMaker(List<Commentary> commentary) {
 

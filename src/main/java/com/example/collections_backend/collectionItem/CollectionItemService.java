@@ -13,6 +13,8 @@ import com.example.collections_backend.exception_handling.exceptions.EntityNotFo
 import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ public class CollectionItemService {
                         .likesCount(likeRepository.countAllByCollectionItem(i))
                         .commentsCount(commentaryRepository.countAllByAnswerToItem(i))
                         .countId(i.getCountId())
+                        .collectionId(i.getCollectionEntity().getIdCollection())
                         .infoName(i.getCollectionEntity().getName())
                         .infoImage(i.getCollectionEntity().getImage())
                         .creationTime(i.getCreationTime())
@@ -126,15 +129,31 @@ public class CollectionItemService {
         return "Success";
     }
 
-    public List<GetItemInfoDto> getAllCollectionItems(CollectionEntity collectionEntity) {
+    public List<GetShortItemInfoDto> getTop5CollectionItems(CollectionEntity collectionEntity) {
+
+        var list = collectionItemRepository.findTop5ByCollectionEntity(collectionEntity);
+
+        return list.stream().map(i -> GetShortItemInfoDto.builder()
+                .itemAbout(i.getAbout())
+                .itemName(i.getName())
+                .itemImage(imagesItemRepository.findTop1ByCollectionItem(i).get().getName())
+                .countId(i.getCountId())
+                .build()
+        ).toList();
+    }
+
+    public List<GetItemInfoDto> getAllCollectionItems(Long idCollection, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
         return listItemsToListDto(
-                collectionItemRepository.findAllByCollectionEntity(collectionEntity)
+                collectionItemRepository.findAllByCollectionEntity_IdCollection(idCollection, pageable)
         );
     }
 
-    public List<GetItemInfoDto> getAllItemsByUsername(String username) {
+    public List<GetItemInfoDto> getAllItemsByUsername(String username,  int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return listItemsToListDto(
-                collectionItemRepository.findAllByCollectionEntity_User_Username(username)
+                collectionItemRepository.findAllByCollectionEntity_User_Username(username, pageable)
         );
     }
 
