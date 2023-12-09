@@ -9,6 +9,7 @@ import com.example.collections_backend.dto.searchDto.SearchUserCollectionDto;
 import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
+import com.example.collections_backend.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +23,7 @@ public class CommentaryService {
     private final CommentaryRepository commentaryRepo;
     private final CollectionItemRepository collectionItemRepo;
     private final CommentaryLikeService commentaryLikeService;
+    private final NotificationService notificationService;
 
     public void deleteCommentary(Long idCommentary) {
         var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));
@@ -46,13 +48,18 @@ public class CommentaryService {
                                 .orElseThrow(EntityNotFoundException::new)
                 );
 
-        if(request.getAnswerToId() != null) {
+        if (request.getAnswerToId() != null) {
             commentary.answerToId(
                     commentaryRepo
                             .findById(request.getAnswerToId())
                             .orElseThrow(() -> new BadRequestException("Something went wrong"))
             );
         }
+
+        /*notificationService.createNewCommentNotification(
+                commentary,
+                getCommentaryByIdOrThrowErr(comment.getReferenceId())
+        );*/
 
         return commentaryRepo.save(commentary.build()).getId();
     }
@@ -68,12 +75,6 @@ public class CommentaryService {
 
         return commentaryStructureMaker(list);
     }
-
-    /*public CommentaryPageDto getFirstCommentary(Long idItem) {
-        return CommentaryPageDto.builder()
-                .firstCommentary()
-                .build();
-    }*/
 
     private List<CommentaryDto> commentaryStructureMaker(List<Commentary> commentary) {
 

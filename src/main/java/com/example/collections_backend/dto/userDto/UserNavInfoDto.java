@@ -8,4 +8,5 @@ import lombok.*;
 public class UserNavInfoDto {
     private String username;
     private String image;
+    private int countNotifications;
 }

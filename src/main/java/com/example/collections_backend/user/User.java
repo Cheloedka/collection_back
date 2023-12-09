@@ -85,4 +85,8 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return isEnabled;
     }
+
+    public boolean isTheSameUserEntity(User secondUser) {
+        return username.equals(secondUser.getNickname());
+    }
 }

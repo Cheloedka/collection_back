@@ -10,6 +10,7 @@ import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.friendship.Friendship;
 import com.example.collections_backend.friendship.FriendshipRepository;
 import com.example.collections_backend.friendship.FriendshipService;
+import com.example.collections_backend.notifications.NotificationService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class UserService {
     private final FriendshipService friendshipService;
     private final FileService fileService;
     private final UserManagementService userManagementService;
+    private final NotificationService notificationService;
 
 
     private User getUserByUsername(String username) {
@@ -119,6 +121,7 @@ public class UserService {
         return UserNavInfoDto.builder()
                 .username(user.getNickname())
                 .image(user.getImage())
+                /*.countNotifications(notificationService.countUnreadNotifications(user))*/
                 .build();
     }
 

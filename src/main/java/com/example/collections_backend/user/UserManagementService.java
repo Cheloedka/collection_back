@@ -28,4 +28,8 @@ public class UserManagementService {
     public User getUserByEmail(String email) {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
+
+    public boolean isTheSameUserEntity(User givenUser) {
+        return getCurrentUser() == givenUser;
+    }
 }

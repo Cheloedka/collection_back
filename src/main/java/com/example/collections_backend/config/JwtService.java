@@ -1,6 +1,7 @@
 package com.example.collections_backend.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -11,11 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
     @Value("${jwt.secret_key}") // 265 bit-key
@@ -26,6 +33,8 @@ public class JwtService {
 
     @Value("${jwt.refresh_token.expiration}")
     private long refreshExpiration;
+
+    private final UserDetailsService userDetailsService;
 
     private Key getSignInKey() {
         byte[] keyByte = Decoders.BASE64.decode(secretKey);
@@ -93,6 +102,26 @@ public class JwtService {
 
     public String extractUsername(String jwtToken) {
         return extractClaim(jwtToken, Claims::getSubject);
+    }
+
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    public Authentication getAuthenticationFromToken(String authToken) {
+        // Remove prefix from token
+        final String jwtToken = authToken.replace("Bearer ", "");
+
+        final String userEmail = extractEmail(jwtToken);
+
+        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) { //updates authentication on server
+            UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
+
+            if (isTokenValid(jwtToken, userDetails)) {
+                return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            }
+        }
+        throw new JwtException("Jwt is wrong or not valid");
     }
 
 }

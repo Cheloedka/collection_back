@@ -1,6 +1,7 @@
 package com.example.collections_backend.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,6 +24,9 @@ public class SecurityConfiguration {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
 
+    @Value("${domain.address}")
+    private String address;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -33,7 +37,8 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/user/**",
                         "/api/image/**",
                         "api/collection/**",
-                        "api/collections/**"
+                        "api/collections/**",
+                        "/ws/**"
                 )
                 .permitAll()
                 .anyRequest()
@@ -50,7 +55,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://192.168.1.102:3000", "http://localhost:3000/"));
+        configuration.setAllowedOrigins(List.of("http://192.168.1.102:3000", address));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
