@@ -121,7 +121,7 @@ public class UserService {
         return UserNavInfoDto.builder()
                 .username(user.getNickname())
                 .image(user.getImage())
-                /*.countNotifications(notificationService.countUnreadNotifications(user))*/
+                .countNotif(notificationService.countUnreadNotifications(user))
                 .build();
     }
 

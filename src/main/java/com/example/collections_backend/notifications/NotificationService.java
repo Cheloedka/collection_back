@@ -54,25 +54,27 @@ public class NotificationService {
     public void createNewCommentNotification(Commentary comment, Commentary repliedComment) {
         var commentator = userManagementService.getCurrentUser();
 
-        //if user replies on his own commentary, no notification will be sent
-        if (!commentator.isTheSameUserEntity(repliedComment.getAuthor())) {
-            saveAndSendToUser(
-                    builder(repliedComment.getAuthor(), NotificationType.COMMENT_REPLY)
-                            .commentary(comment)
-                            .secondUser(commentator)
-            );
+        if (repliedComment != null) {
+            //if user replies on his own commentary, no notification will be sent
+            if (!commentator.isTheSameUserEntity(repliedComment.getAuthor())) {
+                saveAndSendToUser(
+                        builder(repliedComment.getAuthor(), NotificationType.COMMENT_REPLY)
+                                .commentary(comment)
+                                .secondUser(commentator)
+                );
+            }
         }
-
-        //sends notification to post creator
-        var postCreator = comment.getAnswerToItem().getCollectionEntity().getUser();
-        if (!commentator.isTheSameUserEntity(postCreator) &&
-                !repliedComment.getAuthor().isTheSameUserEntity(postCreator)
-        ) {
-            saveAndSendToUser(
-                    builder(comment.getAnswerToItem().getCollectionEntity().getUser(), NotificationType.POST_REPLY)
-                            .commentary(comment)
-                            .secondUser(commentator)
-            );
+        else {
+            //sends notification to post creator
+            var postCreator = comment.getAnswerToItem().getCollectionEntity().getUser();
+            if (!commentator.isTheSameUserEntity(postCreator)
+            ) {
+                saveAndSendToUser(
+                        builder(comment.getAnswerToItem().getCollectionEntity().getUser(), NotificationType.POST_REPLY)
+                                .commentary(comment)
+                                .secondUser(commentator)
+                );
+            }
         }
     }
 

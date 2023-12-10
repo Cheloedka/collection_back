@@ -30,7 +30,7 @@ public class GetItemInfoDto {
     private Integer countId;
     private Long collectionId;
 
-    private Long likesCount;
+    private int likesCount;
     private Long commentsCount;
 
     private boolean isPrivate;

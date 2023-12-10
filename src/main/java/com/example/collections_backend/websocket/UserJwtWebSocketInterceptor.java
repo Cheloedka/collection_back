@@ -24,8 +24,6 @@ public class UserJwtWebSocketInterceptor implements ChannelInterceptor {
     @Override
     public Message<?> preSend(@NonNull Message<?> message, @NonNull MessageChannel channel) {
 
-        System.out.println("WORKED preSend Interceptor"); //todo DELETE
-
         //get headers from message
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 

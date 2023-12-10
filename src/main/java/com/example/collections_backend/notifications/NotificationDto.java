@@ -17,6 +17,8 @@ public class NotificationDto {
     private String message;
 
     private String nickname;
-    private Long postId;
+    private Integer itemId;
+    private Long collectionId;
+    private String ownerItem;
 
 }

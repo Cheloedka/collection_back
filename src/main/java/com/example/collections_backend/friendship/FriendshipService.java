@@ -3,6 +3,7 @@ package com.example.collections_backend.friendship;
 import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingAlreadyExist;
+import com.example.collections_backend.notifications.NotificationService;
 import com.example.collections_backend.user.User;
 import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
     private final UserManagementService userManagementService;
+    private final NotificationService notificationService;
 
     public boolean isFollowingExist(String username) {
 
@@ -38,6 +40,11 @@ public class FriendshipService {
                 .build();
 
         friendshipRepository.save(friendship);
+
+        notificationService.createAddFriendNotification(
+                user,
+                follower
+        );
 
         return "Success";
 

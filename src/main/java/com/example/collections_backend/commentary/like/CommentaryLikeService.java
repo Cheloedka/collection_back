@@ -4,6 +4,7 @@ import com.example.collections_backend.commentary.Commentary;
 import com.example.collections_backend.commentary.CommentaryRepository;
 import com.example.collections_backend.dto.commentaryDto.CommentaryLikeDto;
 import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
+import com.example.collections_backend.notifications.NotificationService;
 import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,17 +16,28 @@ public class CommentaryLikeService {
     private final CommentaryRepository commentaryRepository;
     private final CommentaryLikeRepository commentaryLikeRepository;
     private final UserManagementService userManagementService;
+    private final NotificationService notificationService;
 
     public String newLike(Long idCommentary, boolean isDislike) {
+
+        var commentary = commentaryRepository
+                .findById(idCommentary)
+                .orElseThrow(() -> new SomethingNotFoundException("Commentary is not found"));
+
         var like = CommentaryLike.builder()
-                .commentary(commentaryRepository
-                        .findById(idCommentary)
-                        .orElseThrow(() -> new SomethingNotFoundException("Commentary is not found"))
-                )
+                .commentary(commentary)
                 .likeType(isDislike ? LikeType.DISLIKE : LikeType.LIKE)
                 .build();
 
         commentaryLikeRepository.save(like);
+
+        if (userManagementService.getCurrentUser() != commentary.getAuthor()) {
+            notificationService.createUpvotesNotification(
+                    commentary,
+                    countRating(commentary)
+            );
+        }
+
         return "Success";
     }
 
@@ -42,7 +54,7 @@ public class CommentaryLikeService {
         return "Deleted";
     }
 
-    public Integer countLikes(Commentary commentary) {
+    public Integer countRating(Commentary commentary) {
         return commentaryLikeRepository.countAllByCommentaryAndLikeType(commentary, LikeType.LIKE)
                 -
                commentaryLikeRepository.countAllByCommentaryAndLikeType(commentary, LikeType.DISLIKE);

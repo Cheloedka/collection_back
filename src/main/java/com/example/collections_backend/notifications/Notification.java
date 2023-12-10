@@ -58,12 +58,16 @@ public class Notification {
                 .date(date)
                 .message(message)
                 .nickname(secondUser == null ? null : secondUser.getNickname())
-                .postId(post == null ? null : post.getId());
+                .itemId(post == null ? null : post.getCountId())
+                .collectionId(post == null ? null : post.getCollectionEntity().getIdCollection())
+                .ownerItem(post == null ? null : post.getCollectionEntity().getUser().getNickname());
 
         if (commentary != null) {
             var s = commentary.getContent();
             builder
-                    .postId(commentary.getAnswerToItem().getId())
+                    .itemId(commentary.getAnswerToItem().getCountId())
+                    .collectionId(commentary.getAnswerToItem().getCollectionEntity().getIdCollection())
+                    .ownerItem(commentary.getAnswerToItem().getCollectionEntity().getUser().getNickname())
                     .message(message == null ? (s.length() > 100 ? s.substring(0, 100) : s) : message);
         }
         return builder.build();

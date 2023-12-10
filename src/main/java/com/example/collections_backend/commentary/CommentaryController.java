@@ -21,8 +21,9 @@ public class CommentaryController {
     private final CommentaryService commentaryService;
 
     @PostMapping(value = "/auth/commentary/new")
-    public Long addCommentary(@RequestBody CommentaryDto request) {
-        return commentaryService.newCommentary(request);
+    public ResponseEntity<Long> addCommentary(@RequestBody CommentaryDto request) {
+
+        return ResponseEntity.ok(commentaryService.newCommentary(request));
     }
 
     @PutMapping(value = "/auth/commentary/edit/{idCommentary}")
@@ -31,10 +32,6 @@ public class CommentaryController {
         return ResponseEntity.ok("Success");
     }
 
-    /*@GetMapping("/commentary/first/{idItem}")
-    public CommentaryPageDto getCommentaryToPostFirst(@PathVariable Long idItem) {
-        return commentaryService.getFirstCommentary(idItem);
-    }*/
 
     @GetMapping("/commentary/{idItem}")
     public List<CommentaryDto> getCommentaryToPost(@PathVariable Long idItem) {

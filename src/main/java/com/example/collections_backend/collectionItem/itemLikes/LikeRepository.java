@@ -12,6 +12,6 @@ public interface LikeRepository extends JpaRepository<LikeItem, Long> {
 
     boolean existsByCollectionItemAndUser(CollectionItem collectionItem, User user);
 
-    Long countAllByCollectionItem(CollectionItem collectionItem);
+    int countAllByCollectionItem(CollectionItem collectionItem);
 
 }

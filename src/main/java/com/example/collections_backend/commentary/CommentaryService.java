@@ -3,16 +3,12 @@ package com.example.collections_backend.commentary;
 import com.example.collections_backend.collectionItem.CollectionItemRepository;
 import com.example.collections_backend.commentary.like.CommentaryLikeService;
 import com.example.collections_backend.dto.commentaryDto.CommentaryDto;
-import com.example.collections_backend.dto.commentaryDto.CommentaryPageDto;
-import com.example.collections_backend.dto.searchDto.SearchItemDto;
-import com.example.collections_backend.dto.searchDto.SearchUserCollectionDto;
 import com.example.collections_backend.dto.userDto.UserBasicInfoDto;
 import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
+import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import com.example.collections_backend.notifications.NotificationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -42,26 +38,28 @@ public class CommentaryService {
     public Long newCommentary(CommentaryDto request) {
         var commentary = Commentary.builder()
                 .content(request.getContent())
-                .answerToItem(
-                        collectionItemRepo
-                                .findById(request.getAnswerToItem())
+                .answerToItem(collectionItemRepo.findById(request.getAnswerToItem())
                                 .orElseThrow(EntityNotFoundException::new)
-                );
+                )
+                .answerToId(request.getAnswerToId() == null ? null : getCommentaryByIdOrThrowErr(request.getAnswerToId()))
+                .build();
 
-        if (request.getAnswerToId() != null) {
-            commentary.answerToId(
-                    commentaryRepo
-                            .findById(request.getAnswerToId())
-                            .orElseThrow(() -> new BadRequestException("Something went wrong"))
-            );
-        }
 
-        /*notificationService.createNewCommentNotification(
+        commentaryRepo.save(commentary);
+
+        notificationService.createNewCommentNotification(
                 commentary,
-                getCommentaryByIdOrThrowErr(comment.getReferenceId())
-        );*/
+                commentary.getAnswerToId() == null
+                        ? null
+                        : getCommentaryByIdOrThrowErr(commentary.getAnswerToId().getId())
+        );
 
-        return commentaryRepo.save(commentary.build()).getId();
+        return commentary.getId();
+    }
+
+    private Commentary getCommentaryByIdOrThrowErr(Long id) {
+        return commentaryRepo.findById(id)
+                .orElseThrow(() -> new SomethingNotFoundException("There is no commentary"));
     }
 
     public List<CommentaryDto> getAllCommentaryToPost(Long idItem) {
@@ -97,9 +95,10 @@ public class CommentaryService {
                         .answers(
                                 commentaryStructureMaker(commentaryRepo.findAllByAnswerToId(c))
                         )
-                        .countLikes(commentaryLikeService.countLikes(c))
+                        .countLikes(commentaryLikeService.countRating(c))
                         .likeDto(commentaryLikeService.isExistLike(c))
-                        .answerToId(c.getAnswerToItem().getId())
+                        .answerToItem(c.getAnswerToItem().getId())
+                        .answerToId(c.getAnswerToId() == null ? null : c.getAnswerToId().getId())
                         .build()
                 )
                 .toList();
