@@ -1,10 +1,12 @@
 package com.example.collections_backend.user;
 
 import com.example.collections_backend.auth.AuthenticationService;
+import com.example.collections_backend.dto.ChangeBackDto;
 import com.example.collections_backend.dto.userDto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -24,6 +26,14 @@ public class UserController {
     ) throws IOException {
 
         return ResponseEntity.ok(userService.editAccountSettings(username, request));
+    }
+
+    @PutMapping(path ="/auth/user/{username}/back", consumes = "multipart/form-data")
+    public ResponseEntity<String> editBackUser(
+            @PathVariable String username,
+            @ModelAttribute ChangeBackDto request
+    ) throws IOException {
+        return ResponseEntity.ok(userService.changeBackgroundImage(request.getFile(), username));
     }
 
     @PutMapping("/auth/user/changeEmail")

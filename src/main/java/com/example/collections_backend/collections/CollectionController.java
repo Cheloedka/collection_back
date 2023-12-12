@@ -1,5 +1,6 @@
 package com.example.collections_backend.collections;
 
+import com.example.collections_backend.dto.ChangeBackDto;
 import com.example.collections_backend.dto.collectionDto.NewAndChangeCollectionDto;
 import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
 import com.example.collections_backend.dto.collectionDto.RightInfoInCollectionAndItemPageDto;
@@ -29,6 +30,14 @@ public class CollectionController {
             @PathVariable(value = "idCollection") Long id
     ) throws IOException {
         return ResponseEntity.ok(collectionService.changeCollection(request, id));
+    }
+
+    @PutMapping(path ="auth/collection/{idCollection}/back", consumes = "multipart/form-data")
+    public ResponseEntity<String> editBackCollection(
+            @PathVariable Long idCollection,
+            @ModelAttribute ChangeBackDto request
+    ) throws IOException {
+        return ResponseEntity.ok(collectionService.changeBackgroundImage(request.getFile(), idCollection));
     }
 
     @GetMapping("collections/{username}")

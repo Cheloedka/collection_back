@@ -23,5 +23,6 @@ public class CommentaryDto {
     private List<CommentaryDto> answers;
     private Integer countLikes;
     private CommentaryLikeDto likeDto;
+    private boolean edited;
 }
 

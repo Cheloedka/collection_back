@@ -14,6 +14,7 @@ import com.example.collections_backend.notifications.NotificationService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -58,6 +59,14 @@ public class UserService {
         userRepository.save(user);
 
         return "Changed";
+    }
+
+    public String changeBackgroundImage(MultipartFile image, String username) throws IOException {
+        var user = userManagementService.getUserByUsername(username);
+        String filename = fileService.uploadFile(image);
+        user.setBackgroundImage(filename);
+        userRepository.save(user);
+        return filename;
     }
 
     public UserPageDto getUserPageInfo(String username){
@@ -121,7 +130,7 @@ public class UserService {
         return UserNavInfoDto.builder()
                 .username(user.getNickname())
                 .image(user.getImage())
-                .countNotif(notificationService.countUnreadNotifications(user))
+                .countNotifications(notificationService.countUnreadNotifications(user))
                 .build();
     }
 

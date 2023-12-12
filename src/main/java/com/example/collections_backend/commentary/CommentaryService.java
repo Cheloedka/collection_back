@@ -84,7 +84,6 @@ public class CommentaryService {
                 .map(c -> CommentaryDto
                         .builder()
                         .id(c.getId())
-                        .creationDate(c.getCreationDate())
                         .content(c.getContent())
                         .author(UserBasicInfoDto
                                 .builder()
@@ -99,6 +98,8 @@ public class CommentaryService {
                         .likeDto(commentaryLikeService.isExistLike(c))
                         .answerToItem(c.getAnswerToItem().getId())
                         .answerToId(c.getAnswerToId() == null ? null : c.getAnswerToId().getId())
+                        .edited(!c.getCreationDate().isEqual(c.getUpdatedDate()))
+                        .creationDate(c.getUpdatedDate())
                         .build()
                 )
                 .toList();

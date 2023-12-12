@@ -122,6 +122,14 @@ public class CollectionService {
         return "";
     }
 
+    public String changeBackgroundImage(MultipartFile image, Long idCollection) throws IOException {
+        var collection = collectionManagementService.findById(idCollection);
+        String filename = fileService.uploadFile(image);
+        collection.setBackgroundImage(filename);
+        collectionRepository.save(collection);
+        return filename;
+    }
+
     public List<ReturnCollectionDto> getCollectionsInfo(String username) {
 
         var user = userManagementService.getUserByUsername(username);
