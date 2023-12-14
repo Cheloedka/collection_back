@@ -2,6 +2,7 @@ package com.example.collections_backend.commentary;
 
 import com.example.collections_backend.collectionItem.CollectionItem;
 import com.example.collections_backend.commentary.like.CommentaryLike;
+import com.example.collections_backend.notifications.Notification;
 import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,9 +35,10 @@ public class Commentary {
     private LocalDateTime updatedDate;
 
     @ManyToOne
-    @JoinColumn(name = "author")
+    @JoinColumn(name = "author", nullable = true)
     @CreatedBy
     private User author;
+
 
     @ManyToOne
     @JoinColumn(name = "answer_to_post")
@@ -51,6 +53,9 @@ public class Commentary {
 
     @OneToMany(mappedBy = "commentary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<CommentaryLike> likes;
+
+    @OneToMany(mappedBy = "commentary", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
     @Builder
     public Commentary(String content, Commentary answerToId, CollectionItem answerToItem) {

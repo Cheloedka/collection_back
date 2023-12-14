@@ -3,6 +3,8 @@ package com.example.collections_backend.collectionItem;
 import com.example.collections_backend.collectionItem.itemImages.ImagesItem;
 import com.example.collections_backend.collectionItem.itemLikes.LikeItem;
 import com.example.collections_backend.collections.CollectionEntity;
+import com.example.collections_backend.commentary.Commentary;
+import com.example.collections_backend.notifications.Notification;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -42,6 +44,13 @@ public class CollectionItem {
     @OneToMany(mappedBy = "collectionItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JsonIgnore
     private List<LikeItem> likes;
+
+    @OneToMany(mappedBy = "answerToItem", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Commentary> commentaries;
+
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Notification> notifications;
 
     @ManyToOne
     @JsonIgnore

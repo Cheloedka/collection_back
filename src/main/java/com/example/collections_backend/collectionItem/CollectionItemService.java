@@ -129,9 +129,22 @@ public class CollectionItemService {
         return "Success";
     }
 
-    public List<GetShortItemInfoDto> getTop5CollectionItems(CollectionEntity collectionEntity) {
+   /* public List<GetShortItemInfoDto> getTop5CollectionItems(CollectionEntity collectionEntity) {
 
         var list = collectionItemRepository.findTop5ByCollectionEntity(collectionEntity);
+
+        return list.stream().map(i -> GetShortItemInfoDto.builder()
+                .itemAbout(i.getAbout())
+                .itemName(i.getName())
+                .itemImage(imagesItemRepository.findTop1ByCollectionItem(i).get().getName())
+                .countId(i.getCountId())
+                .build()
+        ).toList();
+    }*/
+
+    public List<GetShortItemInfoDto> getAllShortCollectionItems(CollectionEntity collectionEntity) {
+
+        var list = collectionItemRepository.findAllByCollectionEntity(collectionEntity);
 
         return list.stream().map(i -> GetShortItemInfoDto.builder()
                 .itemAbout(i.getAbout())

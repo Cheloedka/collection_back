@@ -43,7 +43,7 @@ public class UserService {
         ConsumerFunctions.setIfNotNull(request.getName(), user::setName);
         ConsumerFunctions.setIfNotNull(request.getSurname(), user::setSurname);
         ConsumerFunctions.setIfNotNull(request.getNickname(), nick -> {
-            if (userRepository.existsUserByUsername(request.getNickname()))
+            if (userRepository.existsUserByUsernameIgnoreCase(request.getNickname()))
                 throw new SomethingAlreadyExist("Username Already Exist");
             else
                 user.setUsername(request.getNickname());
@@ -98,7 +98,7 @@ public class UserService {
                 .friendships(friendshipRepository
                         .findTop5ByFollower(user)
                         .stream()
-                        .map(Friendship::getUser)
+                        .map(Friendship::getFollowing)
                         .map(f -> UserBasicInfoDto
                                 .builder()
                                 .nickname(f.getNickname())

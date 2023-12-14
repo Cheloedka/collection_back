@@ -1,5 +1,10 @@
 package com.example.collections_backend.auth;
 
+import com.example.collections_backend.collectionItem.itemLikes.LikeRepository;
+import com.example.collections_backend.collections.CollectionRepository;
+import com.example.collections_backend.collections.CollectionService;
+import com.example.collections_backend.commentary.CommentaryRepository;
+import com.example.collections_backend.commentary.like.CommentaryLikeRepository;
 import com.example.collections_backend.config.JwtService;
 import com.example.collections_backend.dto.userDto.AuthenticationDto;
 import com.example.collections_backend.dto.userDto.ConfirmationDto;
@@ -13,8 +18,10 @@ import com.example.collections_backend.email.token.ConfirmationType;
 import com.example.collections_backend.exception_handling.exceptions.ConformationTokenExpiredException;
 import com.example.collections_backend.exception_handling.exceptions.PasswordDoesntMatchException;
 import com.example.collections_backend.exception_handling.exceptions.UserNotFoundException;
+import com.example.collections_backend.files.FileService;
 import com.example.collections_backend.response.AuthenticationResponse;
 import com.example.collections_backend.user.*;
+import com.example.collections_backend.utils.UsernameFunctions;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,11 +29,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -44,10 +49,22 @@ public class AuthenticationService {
     private final EmailSenderService emailSenderService;
     private final ConfirmationTokenRepository confirmationTokenRepository;
     private final UserManagementService userManagementService;
+    private final FileService fileService;
+    private final CommentaryRepository commentaryRepository;
+    private final CollectionService collectionService;
+    private final CollectionRepository collectionRepository;
+    private final LikeRepository likeRepository;
+    private final CommentaryLikeRepository commentaryLikeRepository;
 
     private void existsByEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
             throw new UserNotFoundException("Email is already exist");
+        }
+    }
+
+    private void existsByUsername(String username) {
+        if (userRepository.existsUserByUsernameIgnoreCase(username)) {
+            throw new UserNotFoundException("Username is already exist");
         }
     }
 
@@ -91,9 +108,32 @@ public class AuthenticationService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public String deleteAccount() {
+        var user = userManagementService.getCurrentUser();
+
+        if (user.getImage() != null) {
+            fileService.deleteImageFromStorage(user.getImage());
+        }
+        if (user.getBackgroundImage() != null) {
+            fileService.deleteImageFromStorage(user.getBackgroundImage());
+        }
+
+        commentaryRepository.updateCommentaries(user);
+        commentaryLikeRepository.updateLikes(user);
+        likeRepository.updateLikes(user);
+
+        collectionRepository.findAllByUser(user).forEach(c -> collectionService.deleteCollection(c.getIdCollection()));
+
+        userRepository.delete(user);
+        return "Success";
+    }
+
     public String register(RegisterDto request) {
 
         existsByEmail(request.getEmail());
+        existsByUsername(request.getUsername());
+        UsernameFunctions.checkUsername(request.getUsername());
 
         var user = User.builder()
                 .username(request.getUsername())

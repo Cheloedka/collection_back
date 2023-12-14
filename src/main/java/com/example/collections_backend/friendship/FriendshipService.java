@@ -21,7 +21,7 @@ public class FriendshipService {
 
     public boolean isFollowingExist(String username) {
 
-        return friendshipRepository.existsFriendshipByFollowerAndUser(
+        return friendshipRepository.existsFriendshipByFollowerAndFollowing(
                 userManagementService.getCurrentUser(),
                 userManagementService.getUserByUsername(username)
         );
@@ -36,7 +36,7 @@ public class FriendshipService {
 
         var friendship = Friendship.builder()
                 .follower(follower)
-                .user(user)
+                .following(user)
                 .build();
 
         friendshipRepository.save(friendship);
@@ -51,7 +51,7 @@ public class FriendshipService {
     }
 
     public String deleteFollowing(String username) {
-        var friendship = friendshipRepository.findFriendshipByFollowerAndUser(
+        var friendship = friendshipRepository.findFriendshipByFollowerAndFollowing(
                 userManagementService.getCurrentUser(),
                 userManagementService.getUserByUsername(username)
         ).orElseThrow(EntityNotFoundException::new);
@@ -66,7 +66,7 @@ public class FriendshipService {
         List<User> following = friendshipRepository
                 .findAllByFollower(userManagementService.getUserByUsername(username))
                 .stream()
-                .map(Friendship::getUser)
+                .map(Friendship::getFollowing)
                 .toList();
 
         return following.stream()
@@ -85,7 +85,7 @@ public class FriendshipService {
     public List<UserBasicInfoDto> getFollowers(String username) {
 
         List<User> following = friendshipRepository
-                .findAllByUser(userManagementService.getUserByUsername(username))
+                .findAllByFollowing(userManagementService.getUserByUsername(username))
                 .stream()
                 .map(Friendship::getFollower)
                 .toList();

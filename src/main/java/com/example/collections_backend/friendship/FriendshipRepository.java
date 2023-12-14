@@ -9,9 +9,9 @@ import java.util.Optional;
 
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
-    boolean existsFriendshipByFollowerAndUser(User follower, User user);
+    boolean existsFriendshipByFollowerAndFollowing(User follower, User following);
 
-    Optional<Friendship> findFriendshipByFollowerAndUser(User follower, User user);
+    Optional<Friendship> findFriendshipByFollowerAndFollowing(User follower, User following);
 
     Optional<Long> countAllByFollower(User user);
 
@@ -19,6 +19,6 @@ public interface FriendshipRepository extends JpaRepository<Friendship, Long> {
 
     List<Friendship> findAllByFollower(User user); //get all following
 
-    List<Friendship> findAllByUser(User user);  //get all followers
+    List<Friendship> findAllByFollowing(User user);  //get all followers
 
 }

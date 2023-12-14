@@ -76,7 +76,7 @@ public class CommentaryService {
 
     private List<CommentaryDto> commentaryStructureMaker(List<Commentary> commentary) {
 
-        if(commentary.size() == 0) {
+        if (commentary.size() == 0) {
             return null;
         }
 
@@ -87,8 +87,8 @@ public class CommentaryService {
                         .content(c.getContent())
                         .author(UserBasicInfoDto
                                 .builder()
-                                .image(c.getAuthor().getImage())
-                                .nickname(c.getAuthor().getNickname())
+                                .image(c.getAuthor() != null ? c.getAuthor().getImage() : null)
+                                .nickname(c.getAuthor() != null ? c.getAuthor().getNickname() : null)
                                 .build()
                         )
                         .answers(

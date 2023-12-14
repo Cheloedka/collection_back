@@ -75,6 +75,10 @@ public class UserController {
         return userService.getUserSettingsInfo(username);
     }
 
+    @DeleteMapping("/auth/user/delete")
+    public ResponseEntity<String> deleteAccount() {
+        return ResponseEntity.ok(authenticationService.deleteAccount());
+    }
 
 
 }

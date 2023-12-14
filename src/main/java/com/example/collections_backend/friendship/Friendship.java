@@ -18,9 +18,17 @@ public class Friendship {
     Long idFriendship;
 
     @ManyToOne
+    @JoinColumn(
+            nullable = false,
+            name = "follower_id_user"
+    )
     private User follower; //someone who follow on
 
     @ManyToOne
-    private User user;
+    @JoinColumn(
+            nullable = false,
+            name = "user_id_user"
+    )
+    private User following;
 
 }
