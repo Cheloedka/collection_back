@@ -45,6 +45,11 @@ public class CollectionController {
         return collectionService.getCollectionsInfo(username);
     }
 
+    @GetMapping("collection/getTop3/{username}")
+    public List<ReturnCollectionDto> getTop3Collections(@PathVariable(value = "username") String username) {
+        return collectionService.getTop3Collections(username);
+    }
+
     @GetMapping("collection/{username}/{idCollection}")
     public ReturnCollectionDto getCollectionInfo( @PathVariable(value = "idCollection") Long id,
             @PathVariable(value = "username") String username

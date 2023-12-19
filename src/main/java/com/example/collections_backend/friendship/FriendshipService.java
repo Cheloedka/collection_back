@@ -21,6 +21,12 @@ public class FriendshipService {
 
     public boolean isFollowingExist(String username) {
 
+        boolean isAuth = userManagementService.isContextUser();
+
+        if (!isAuth) {
+            return false;
+        }
+
         return friendshipRepository.existsFriendshipByFollowerAndFollowing(
                 userManagementService.getCurrentUser(),
                 userManagementService.getUserByUsername(username)

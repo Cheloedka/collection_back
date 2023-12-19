@@ -35,4 +35,6 @@ public class GetItemInfoDto {
 
     private boolean isPrivate;
     private LocalDateTime creationTime;
+
+    private String author;
 }

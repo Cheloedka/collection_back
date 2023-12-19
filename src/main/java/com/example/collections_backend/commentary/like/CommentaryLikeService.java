@@ -62,6 +62,12 @@ public class CommentaryLikeService {
 
     public CommentaryLikeDto isExistLike(Commentary commentary) {
 
+        boolean isAuth = userManagementService.isContextUser();
+
+        if (!isAuth) {
+            return null;
+        }
+
         var like = commentaryLikeRepository
                 .findByCommentaryAndIdUser(commentary, userManagementService.getCurrentUser());
 

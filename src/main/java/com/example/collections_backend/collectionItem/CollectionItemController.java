@@ -29,10 +29,16 @@ public class CollectionItemController {
                                                   @RequestParam(defaultValue = "0", required = false) int page,
                                                   @RequestParam(defaultValue = "4", required = false) int pageSize
     ) {
-        if (type.equals("user"))
-            return collectionItemService.getAllItemsByUsername(info, page, pageSize);
-        if (type.equals("collection"))
-            return collectionItemService.getAllCollectionItems(Long.valueOf(info), page, pageSize);
+        switch (type) {
+            case "user":
+                return collectionItemService.getAllItemsByUsername(info, page, pageSize);
+            case "collection":
+                return collectionItemService.getAllCollectionItems(Long.valueOf(info), page, pageSize);
+            case "friendship":
+                return collectionItemService.getItemsByFriendships(info, page, pageSize);
+            case "main":
+                return collectionItemService.getMainItems(page, pageSize);
+        }
 
         throw new BadRequestException("There is not such search type as \"" + type + "\" ");
     }

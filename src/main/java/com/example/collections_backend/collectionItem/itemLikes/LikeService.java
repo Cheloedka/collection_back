@@ -52,6 +52,10 @@ public class LikeService {
     }
 
     public boolean isExistLike(Long id) {
+        boolean isAuth = userManagementService.isContextUser();
+        if (!isAuth) {
+            return false;
+        }
         return likeRepository.existsByCollectionItemAndUser(getItem(id), userManagementService.getCurrentUser());
 
     }

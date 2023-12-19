@@ -132,15 +132,17 @@ public class CollectionService {
 
     public List<ReturnCollectionDto> getCollectionsInfo(String username) {
 
+        boolean isAuth = userManagementService.isContextUser();
         var user = userManagementService.getUserByUsername(username);
         List<CollectionEntity> collections = new ArrayList<>();
 
-        if (userManagementService.getUserByUsername(username).equals(userManagementService.getCurrentUser())) {
+        if (isAuth && user.equals(userManagementService.getCurrentUser())) {
             collections.addAll(collectionRepository.findAllByUser(user));
         }
         else {
             collections.addAll(collectionRepository.findAllByUserAndIsPrivateFalse(user));
         }
+
         return collections.stream()
                 .map(el -> ReturnCollectionDto
                         .builder()
@@ -184,5 +186,33 @@ public class CollectionService {
                 .items(collectionItemService.getAllShortCollectionItems(collection))
                 .countItems(collectionItemRepository.countAllByCollectionEntity(collection))
                 .build();
+    }
+
+    public List<ReturnCollectionDto> getTop3Collections(String username) {
+        if (username.equals("notAuth")) {
+            return collectionRepository.find3Collections()
+                    .stream()
+                    .limit(3)
+                    .map(c -> ReturnCollectionDto.builder()
+                            .name(c.getName())
+                            .about(c.getAbout())
+                            .id(c.getIdCollection())
+                            .author(c.getUser().getNickname())
+                            .image(c.getImage())
+                            .build())
+                    .toList();
+        }
+        var user = userManagementService.getUserByUsername(username);
+        return collectionRepository.find3CollectionsByUser(user.getIdUser())
+                .stream()
+                .limit(3)
+                .map(c -> ReturnCollectionDto.builder()
+                        .name(c.getName())
+                        .about(c.getAbout())
+                        .id(c.getIdCollection())
+                        .author(c.getUser().getNickname())
+                        .image(c.getImage())
+                        .build())
+                .toList();
     }
 }

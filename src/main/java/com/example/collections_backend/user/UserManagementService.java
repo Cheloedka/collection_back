@@ -29,6 +29,11 @@ public class UserManagementService {
         return userRepository.findUserByEmail(email).orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
+    public boolean isContextUser() {
+        String s = SecurityContextHolder.getContext().getAuthentication().getAuthorities().toArray()[0].toString();
+        return !s.equals("ROLE_ANONYMOUS");
+    }
+
     public boolean isTheSameUserEntity(User givenUser) {
         return getCurrentUser() == givenUser;
     }

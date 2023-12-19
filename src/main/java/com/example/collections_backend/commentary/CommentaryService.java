@@ -8,6 +8,7 @@ import com.example.collections_backend.exception_handling.exceptions.BadRequestE
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.exception_handling.exceptions.SomethingNotFoundException;
 import com.example.collections_backend.notifications.NotificationService;
+import com.example.collections_backend.user.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class CommentaryService {
     private final CollectionItemRepository collectionItemRepo;
     private final CommentaryLikeService commentaryLikeService;
     private final NotificationService notificationService;
+    private final UserManagementService userManagementService;
 
     public void deleteCommentary(Long idCommentary) {
         var commentary = commentaryRepo.findById(idCommentary).orElseThrow(() -> new BadRequestException("Something went wrong"));

@@ -11,12 +11,17 @@ import com.example.collections_backend.commentary.CommentaryRepository;
 import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
+import com.example.collections_backend.friendship.Friendship;
+import com.example.collections_backend.friendship.FriendshipRepository;
+import com.example.collections_backend.user.UserManagementService;
 import com.example.collections_backend.utils.ConsumerFunctions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +38,8 @@ public class CollectionItemService {
     private final LikeService likeService;
     private final LikeRepository likeRepository;
     private final CommentaryRepository commentaryRepository;
+    private final UserManagementService userManagementService;
+    private final FriendshipRepository friendshipRepository;
 
 
     private List<GetItemInfoDto> listItemsToListDto(List<CollectionItem> items) {
@@ -50,6 +57,7 @@ public class CollectionItemService {
                         .infoName(i.getCollectionEntity().getName())
                         .infoImage(i.getCollectionEntity().getImage())
                         .creationTime(i.getCreationTime())
+                        .author(i.getCollectionEntity().getUser().getNickname())
                         .build()
                 )
                 .toList();
@@ -129,19 +137,6 @@ public class CollectionItemService {
         return "Success";
     }
 
-   /* public List<GetShortItemInfoDto> getTop5CollectionItems(CollectionEntity collectionEntity) {
-
-        var list = collectionItemRepository.findTop5ByCollectionEntity(collectionEntity);
-
-        return list.stream().map(i -> GetShortItemInfoDto.builder()
-                .itemAbout(i.getAbout())
-                .itemName(i.getName())
-                .itemImage(imagesItemRepository.findTop1ByCollectionItem(i).get().getName())
-                .countId(i.getCountId())
-                .build()
-        ).toList();
-    }*/
-
     public List<GetShortItemInfoDto> getAllShortCollectionItems(CollectionEntity collectionEntity) {
 
         var list = collectionItemRepository.findAllByCollectionEntity(collectionEntity);
@@ -160,6 +155,28 @@ public class CollectionItemService {
 
         return listItemsToListDto(
                 collectionItemRepository.findAllByCollectionEntity_IdCollection(idCollection, pageable)
+        );
+    }
+
+    public List<GetItemInfoDto> getItemsByFriendships(String username, int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+
+        var user = userManagementService.getUserByUsername(username);
+        var listUsers = friendshipRepository.findAllByFollower(user)
+                .stream()
+                .map(f -> f.getFollowing().getNickname())
+                .toList();
+
+        return listItemsToListDto(
+                collectionItemRepository.findPosts(listUsers, pageable)
+        );
+    }
+
+    public List<GetItemInfoDto> getMainItems(int pageNumber, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        var startDate = LocalDateTime.now().minusDays(30);
+        return listItemsToListDto(
+                collectionItemRepository.getPopularPostsBeforeDate(startDate, pageable)
         );
     }
 

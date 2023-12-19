@@ -20,4 +20,6 @@ public class ReturnCollectionDto {
     private boolean collectionPrivate;
     private List<GetShortItemInfoDto> items = new ArrayList<>();
     private Long countItems;
+
+    private String author;
 }

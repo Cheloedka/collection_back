@@ -36,9 +36,13 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests()
                 .requestMatchers("/api/user/**",
                         "/api/image/**",
-                        "api/collection/**",
-                        "api/collections/**",
-                        "/ws/**"
+                        "/api/collection/**",
+                        "/api/collections/**",
+                        "/ws/**",
+                        "/api/item/**",
+                        "/api/commentary/**",
+                        "/api/following/**",
+                        "/api/followers/**"
                 )
                 .permitAll()
                 .anyRequest()
