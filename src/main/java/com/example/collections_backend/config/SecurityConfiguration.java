@@ -42,7 +42,10 @@ public class SecurityConfiguration {
                         "/api/item/**",
                         "/api/commentary/**",
                         "/api/following/**",
-                        "/api/followers/**"
+                        "/api/followers/**",
+                        "/api/search/**",
+                        "/api/test/**"
+
                 )
                 .permitAll()
                 .anyRequest()

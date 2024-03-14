@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: backend
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "spring.datasource.url"  : "jdbc:postgresql://postgres:5432/collectionv2",
+        "spring.datasource.username" : "postgres",
+        "spring.datasource.password" : "data",
+        "spring.jpa.properties.hibernate.dialect" : "org.hibernate.dialect.PostgreSQLDialect",
+        "spring.jpa.hibernate.ddl-auto" : "update"
+      }'
+    volumes:
+      - .m2:/root/.m2
+      - images:/app/images
+    stdin_open: true
+    tty: true
+
+  postgres:
+    container_name: db
+    image: postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=data
+      - POSTGRES_DB=collectionv2
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgres
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
+      PGADMIN_DEFAULT_PASSWORD: data
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  images:
+  db:
+  pgadmin-data:

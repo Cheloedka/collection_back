@@ -52,7 +52,7 @@ public class CollectionService {
                 .equals(userManagementService.getCurrentUser().getName());
     }
 
-    public String newCollection(NewAndChangeCollectionDto request) throws IOException {
+    public void newCollection(NewAndChangeCollectionDto request) throws IOException {
 
         var collection = CollectionEntity.builder()
                 .name(request.getName())
@@ -69,8 +69,6 @@ public class CollectionService {
                 .build();
 
         collectionRepository.save(collection);
-
-        return "Collection create successful";
     }
 
     public String changeCollection(NewAndChangeCollectionDto request, Long id) throws IOException {

@@ -5,6 +5,7 @@ import com.example.collections_backend.commentary.like.CommentaryLike;
 import com.example.collections_backend.notifications.Notification;
 import com.example.collections_backend.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;

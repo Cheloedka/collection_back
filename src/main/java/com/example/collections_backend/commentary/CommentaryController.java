@@ -1,10 +1,6 @@
 package com.example.collections_backend.commentary;
 
 import com.example.collections_backend.dto.commentaryDto.CommentaryDto;
-import com.example.collections_backend.dto.commentaryDto.CommentaryPageDto;
-import com.example.collections_backend.dto.searchDto.SearchItemDto;
-import com.example.collections_backend.dto.searchDto.SearchUserCollectionDto;
-import com.example.collections_backend.exception_handling.exceptions.BadRequestException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,5 @@
 package com.example.collections_backend.user;
 
-import com.example.collections_backend.collectionItem.itemLikes.LikeItem;
-import com.example.collections_backend.collections.CollectionEntity;
-import com.example.collections_backend.commentary.Commentary;
 import com.example.collections_backend.email.token.ConfirmationToken;
 import com.example.collections_backend.friendship.Friendship;
 import com.example.collections_backend.notifications.Notification;

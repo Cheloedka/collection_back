@@ -5,6 +5,7 @@ import com.example.collections_backend.dto.collectionDto.NewAndChangeCollectionD
 import com.example.collections_backend.dto.collectionDto.ReturnCollectionDto;
 import com.example.collections_backend.dto.collectionDto.RightInfoInCollectionAndItemPageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,11 +18,12 @@ import java.util.List;
 public class CollectionController {
 
     private final CollectionService collectionService;
+    private final CollectionRepository collectionRepository;
 
     @PostMapping(path ="auth/collection/new", consumes = "multipart/form-data")
-    public ResponseEntity<String> addCollection(
-            @ModelAttribute NewAndChangeCollectionDto request) throws IOException {
-        return ResponseEntity.ok(collectionService.newCollection(request));
+    public ResponseEntity<String> newCollection(@ModelAttribute NewAndChangeCollectionDto request) throws IOException {
+        collectionService.newCollection(request);
+        return new ResponseEntity<>("Collection created successful", HttpStatus.OK);
     }
 
     @PostMapping(path ="auth/collection/{idCollection}/edit", consumes = "multipart/form-data")
@@ -51,7 +53,7 @@ public class CollectionController {
     }
 
     @GetMapping("collection/{username}/{idCollection}")
-    public ReturnCollectionDto getCollectionInfo( @PathVariable(value = "idCollection") Long id,
+    public ReturnCollectionDto getCollectionInfo(@PathVariable(value = "idCollection") Long id,
             @PathVariable(value = "username") String username
     ) {
         return collectionService.getCollectionInfo(id, username);

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.1.4</version>
+        <version>3.0.4</version>
         <relativePath/>
     </parent>
     <groupId>cheloedka</groupId>
@@ -15,8 +15,15 @@
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>17</java.version>
+        <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
     </properties>
     <dependencies>
+
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>8.0.0.Final</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -57,10 +64,6 @@
             <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
-
-
-
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -136,7 +139,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>2.4.1</version>
             </plugin>
         </plugins>
     </build>

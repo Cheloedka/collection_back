@@ -17,8 +17,13 @@ import java.util.Random;
 @Service
 @RequiredArgsConstructor
 public class FileService {
+
     @Value("${upload.path}")
     private String path;
+
+    /*@Value("${spring.servlet.multipart.location}")
+    private String path2;*/
+
 
 
     public byte[] getImageByName(String filename) throws IOException {
