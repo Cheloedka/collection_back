@@ -153,6 +153,7 @@ public class AuthenticationService {
     }
 
     public String confirmation(ConfirmationDto request) {
+        System.out.println("WORKED");
 
         var token = confirmationTokenRepository
                 .findByConfirmationToken(request.getToken())

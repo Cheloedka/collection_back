@@ -11,7 +11,6 @@ import com.example.collections_backend.commentary.CommentaryRepository;
 import com.example.collections_backend.dto.collectionItemDto.*;
 import com.example.collections_backend.exception_handling.exceptions.EntityNotFoundException;
 import com.example.collections_backend.files.FileService;
-import com.example.collections_backend.friendship.Friendship;
 import com.example.collections_backend.friendship.FriendshipRepository;
 import com.example.collections_backend.user.UserManagementService;
 import com.example.collections_backend.utils.ConsumerFunctions;
@@ -151,7 +150,7 @@ public class CollectionItemService {
     }
 
     public List<GetItemInfoDto> getAllCollectionItems(Long idCollection, int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("creationTime").descending());
 
         return listItemsToListDto(
                 collectionItemRepository.findAllByCollectionEntity_IdCollection(idCollection, pageable)
@@ -181,7 +180,7 @@ public class CollectionItemService {
     }
 
     public List<GetItemInfoDto> getAllItemsByUsername(String username,  int pageNumber, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by("creationTime").descending());
         return listItemsToListDto(
                 collectionItemRepository.findAllByCollectionEntity_User_Username(username, pageable)
         );

@@ -22,6 +22,7 @@ public class CollectionEntity {
     private Long idCollection;
     private String name;
     private String about;
+    @Column(length = 500)
     private String information;
     private String image;
     private String backgroundImage;
